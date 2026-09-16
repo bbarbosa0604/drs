@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "name": "orchestrated-scaffold",
+  "managedPaths": [
+    ".agents/skills/**",
+    "AGENTS.md",
+    "GUIDE.md",
+    "GUIDE-FLUXOGRAMA.mmd",
+    ".github/workflows/**",
+    "README.md",
+    ".scaffold-version"
+  ],
+  "ignoreDuringUpgrade": [
+    "tasks/**",
+    "projetos/**",
+    "front-end/**",
+    "next-js/**",
+    "backend/**",
+    "mobile/**",
+    "requirements/**",
+    "design-system/front/**",
+    "design-system/mobile/**",
+    "contracts/openapi.yaml",
+    "**/*.example",
+    ".git/**"
+  ],
+  "projectBootstrap": {
+    "target": "projetos",
+    "commonPaths": [
+      "AGENTS.md",
+      "GUIDE.md",
+      "GUIDE-FLUXOGRAMA.mmd",
+      "GUIDE-FLUXOGRAMA.svg",
+      "README.md",
+      ".scaffold-version",
+      ".gitignore",
+      ".agents",
+      "tasks",
+      "requirements",
+      "design-system",
+      "contracts",
+      "docs",
+      "scripts",
+      ".github",
+      ".husky",
+      ".vscode",
+      ".codex",
+      "package.json",
+      "package-lock.json",
+      "commitlint.config.cjs",
+      "lint-staged.config.js",
+      "review-guard.config.json",
+      "scaffold-manifest.json"
+    ],
+    "stackPaths": {
+      "front-end": "front-end",
+      "next-js": "next-js",
+      "backend": "backend",
+      "mobile": "mobile"
+    }
+  },
+  "postUpgradeCommands": ["npm install --silent"]
+}

@@ -1,0 +1,32 @@
+{
+  "warningFileLines": 800,
+  "criticalFileLines": 1200,
+  "warningCommitFiles": 15,
+  "warningPrFiles": 25,
+  "criticalPrFiles": 60,
+  "warningPrChangedLines": 1000,
+  "criticalPrChangedLines": 2500,
+  "maxTypesPerFileWarning": 8,
+  "maxFunctionsPerFileWarning": 10,
+  "largeFileChangedLinesStrict": 300,
+  "ignoredPaths": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".next",
+    ".turbo",
+    ".expo",
+    "generated",
+    "android/build",
+    "ios/Pods"
+  ],
+  "typeFilePatterns": [
+    ".types.",
+    "types.ts",
+    "typings.ts",
+    "dto.ts",
+    "schema.ts"
+  ],
+  "utilsFilePatterns": [".utils.", "utils.ts", ".helpers.", "helpers.ts"]
+}

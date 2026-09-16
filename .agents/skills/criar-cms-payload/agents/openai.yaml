@@ -1,0 +1,4 @@
+interface:
+  display_name: "Criar CMS Payload"
+  short_description: "Implementa Payload CMS dentro do Next via Local API."
+  default_prompt: "Use $criar-cms-payload para implementar Payload CMS dentro da stack next-js, com admin em /admin, ports em core e adapters na fronteira."

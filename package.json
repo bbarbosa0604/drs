@@ -1,0 +1,22 @@
+{
+  "name": "scaffolds-quality-tools",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "commitlint": "commitlint",
+    "lint:staged": "lint-staged --concurrent false",
+    "review:staged": "node scripts/review-guard.js --staged",
+    "review:pr": "node scripts/review-guard.js --pr",
+    "quality:lint": "node scripts/run-stack-script.js lint",
+    "quality:typecheck": "node scripts/run-stack-script.js typecheck",
+    "quality:test": "node scripts/run-stack-script.js test"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1"
+  }
+}

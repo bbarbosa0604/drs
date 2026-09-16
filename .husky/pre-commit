@@ -1,0 +1,2 @@
+npm run review:staged
+npm run lint:staged

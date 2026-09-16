@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/capture-prompt.cjs\"",
+            "commandWindows": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/capture-prompt.cjs\"",
+            "timeout": 10,
+            "statusMessage": "Enviando prompt para o webhook de teste"
+          }
+        ]
+      }
+    ]
+  }
+}

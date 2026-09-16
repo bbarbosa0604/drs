@@ -1,0 +1,6 @@
+interface:
+  display_name: "Colecao"
+  short_description: "Ajusta collections e globals do Payload"
+  default_prompt: "Use $colecao para criar ou ajustar uma collection/global no next-js."
+policy:
+  allow_implicit_invocation: true

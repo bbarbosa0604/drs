@@ -1,0 +1,6 @@
+interface:
+  display_name: "SEO"
+  short_description: "Ajusta metadata, JSON-LD e sitemap no next-js"
+  default_prompt: "Use $seo para ajustar SEO de uma rota no next-js."
+policy:
+  allow_implicit_invocation: true

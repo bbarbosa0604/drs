@@ -1,0 +1,4 @@
+interface:
+  display_name: "Criar CMS Next"
+  short_description: "Mapeia conteudo Next e implementa CMS com Postgres."
+  default_prompt: "Use $criar-cms-next para mapear o conteudo do Next.js e implementar um CMS com login, gestao de conteudo, API interna e Postgres."

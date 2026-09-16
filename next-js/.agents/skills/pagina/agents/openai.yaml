@@ -1,0 +1,6 @@
+interface:
+  display_name: "Pagina"
+  short_description: "Cria rotas do App Router no next-js"
+  default_prompt: "Use $pagina para criar ou refatorar uma rota no next-js."
+policy:
+  allow_implicit_invocation: true

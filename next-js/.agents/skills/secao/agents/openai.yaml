@@ -1,0 +1,6 @@
+interface:
+  display_name: "Secao"
+  short_description: "Cria blocks de Payload pareados com secao de render"
+  default_prompt: "Use $secao para criar ou refatorar um block/secao no next-js."
+policy:
+  allow_implicit_invocation: true

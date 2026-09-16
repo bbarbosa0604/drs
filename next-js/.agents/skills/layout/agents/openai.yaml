@@ -1,0 +1,6 @@
+interface:
+  display_name: "Layout"
+  short_description: "Cria layouts e shells no next-js"
+  default_prompt: "Use $layout para criar ou refatorar um layout no next-js."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Porta"
+  short_description: "Cria ports e adapters no padrao hexagonal"
+  default_prompt: "Use $porta para criar ou ajustar um port/adapter no next-js."
+policy:
+  allow_implicit_invocation: true

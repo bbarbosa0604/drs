@@ -1,0 +1,92 @@
+name: PR Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  quality:
+    name: Quality guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            front-end/package-lock.json
+            backend/package-lock.json
+            mobile/package-lock.json
+            next-js/package-lock.json
+
+      - name: Install root tooling
+        run: npm ci
+
+      - name: Install stack dependencies
+        run: |
+          for dir in front-end backend mobile next-js; do
+            if [ -f "$dir/package.json" ]; then
+              if [ -f "$dir/package-lock.json" ]; then
+                npm ci --prefix "$dir"
+              else
+                npm install --prefix "$dir"
+              fi
+            fi
+          done
+
+      - name: Validate commit messages
+        run: npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
+
+      - name: Lint stacks
+        run: npm run quality:lint
+
+      - name: Typecheck stacks
+        run: npm run quality:typecheck
+
+      - name: Test stacks
+        run: npm run quality:test
+
+      - name: Run PR Review Guard
+        id: review_guard
+        continue-on-error: true
+        env:
+          REVIEW_GUARD_STRICT: "true"
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: npm run review:pr -- --base "${{ github.base_ref }}" --head HEAD --summary-file review-guard-summary.md
+
+      - name: Comment Review Guard summary
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- pr-review-guard -->';
+            const body = `${marker}\n${fs.readFileSync('review-guard-summary.md', 'utf8')}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+            const existing = comments.data.find((comment) =>
+              comment.user.type === 'Bot' && comment.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Fail on strict Review Guard violations
+        if: steps.review_guard.outcome == 'failure'
+        run: exit 1
