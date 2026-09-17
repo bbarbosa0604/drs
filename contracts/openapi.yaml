@@ -260,6 +260,102 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/modules:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: activateModule
+      summary: >
+        Ativa um modulo (ex.: Escopometro SGSI) no projeto. Idempotente: ativar um
+        modulo ja ativo retorna a instancia existente (200) em vez de duplicar;
+        a primeira ativacao cria (201) o ModuleInstance + SgsiScope + primeira
+        SgsiScopeVersion (rascunho) + DocumentControl vazio.
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivateModuleInput"
+      responses:
+        "200":
+          description: Modulo ja estava ativo; retorna a instancia existente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SgsiScope"
+        "201":
+          description: Modulo ativado agora
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SgsiScope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getSgsiScope
+      summary: Obtem o SgsiScope do projeto (modulo Escopometro), com o DocumentControl atual
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: SgsiScope encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SgsiScope"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: Modulo Escopometro ainda nao foi ativado neste projeto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /projects/{id}/sgsi-scope/document-control:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    patch:
+      operationId: updateDocumentControl
+      summary: >
+        Autosave da Etapa 1.2 (Controle documental). Todos os campos sao
+        opcionais: persiste so o que foi enviado, sem exigir o payload
+        completo (PRD secao 19).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentControlInput"
+      responses:
+        "200":
+          description: DocumentControl atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentControl"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -508,8 +604,9 @@ components:
     ModuleInstance:
       type: object
       description: >
-        Conceitual nesta versao do contrato (sem endpoint proprio ainda - ver Task 011).
-        Representa a ativacao de um modulo dentro de um Projeto.
+        Representa a ativacao de um modulo dentro de um Projeto. Exposto via
+        `POST /projects/{id}/modules` (Task 011) apenas embutido em `SgsiScope`,
+        nao tem endpoint proprio de leitura ainda.
       required: [id, projectId, moduleKey, activatedAt]
       properties:
         id:
@@ -521,6 +618,114 @@ components:
         moduleKey:
           $ref: "#/components/schemas/ModuleKey"
         activatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    ActivateModuleInput:
+      type: object
+      required: [moduleKey]
+      properties:
+        moduleKey:
+          $ref: "#/components/schemas/ModuleKey"
+
+    SgsiScopeVersionStatus:
+      type: string
+      description: >
+        PRD secao 20. So DRAFT/APPROVED nesta versao; protecao completa contra
+        sobrescrita silenciosa de versao aprovada e a Task 027.
+      enum: [DRAFT, APPROVED]
+
+    DocumentControlInput:
+      type: object
+      description: >
+        Etapa 1.2 do Escopometro (PRD secao 8.2). Todos os campos opcionais:
+        usado tambem no autosave parcial (`PATCH .../document-control`).
+      properties:
+        classification:
+          type: string
+          nullable: true
+        version:
+          type: string
+          nullable: true
+        documentDate:
+          type: string
+          format: date
+          nullable: true
+        validUntil:
+          type: string
+          format: date
+          nullable: true
+        preparedByUserId:
+          type: string
+          format: uuid
+          nullable: true
+        approvedByUserId:
+          type: string
+          format: uuid
+          nullable: true
+
+    DocumentControl:
+      allOf:
+        - $ref: "#/components/schemas/DocumentControlInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    SgsiScope:
+      type: object
+      description: >
+        Raiz do modulo Escopometro dentro de um Projeto (PRD secao 20). Uma
+        SgsiScope por Projeto (1:1 com o ModuleInstance de moduleKey
+        SGSI_SCOPE). Entidades das etapas 2-8 serao adicionadas a este schema
+        pelas tasks correspondentes (Slices 002-006), nao de uma vez.
+      required:
+        [
+          id,
+          projectId,
+          moduleInstanceId,
+          currentVersionNumber,
+          currentVersionStatus,
+          createdAt,
+          updatedAt,
+        ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        moduleInstanceId:
+          type: string
+          format: uuid
+        currentVersionNumber:
+          type: integer
+        currentVersionStatus:
+          $ref: "#/components/schemas/SgsiScopeVersionStatus"
+        documentControl:
+          allOf:
+            - $ref: "#/components/schemas/DocumentControl"
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
           type: string
           format: date-time
         deletedAt:

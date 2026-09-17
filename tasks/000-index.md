@@ -130,7 +130,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 008: `done`
 - Task 009: `done`
 - Task 010: `done`
-- Demais tasks (011-027): `planned`
+- Task 011: `done`
+- Demais tasks (012-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -156,6 +157,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-008.md` - Task 008 concluida (`done`); dashboard real com fluxo minimo de login/sessao (gap de backlog, nenhuma task cobria login) construido para viabilizar a task; proximo contexto recomendado para a Task 009.
 - `.agents/state/handoffs/TASK-009.md` - Task 009 concluida (`done`); CRUD de Organizacao/Projeto navegavel via UI (react-hook-form + zod, aprovado pelo Bruno); gap de contrato encontrado (sem endpoint de listagem de usuarios para Consultor) registrado como pendencia — `responsibleUserId`/`participantUserIds` simplificados; proximo contexto recomendado para a Task 010.
 - `.agents/state/handoffs/TASK-010.md` - Task 010 concluida (`done`); `CLAUDE.md`, `docs/architecture.md` e `docs/database.md` criados/formalizados, consolidando as decisoes e pendencias das Tasks 001-009; Slice 001 (Fundacao da plataforma) esta 100% `done`; proximo contexto recomendado para o inicio do Slice 002 (Task 011).
+- `.agents/state/handoffs/TASK-011.md` - Task 011 concluida (`done`); primeira task do Slice 002; modulo `sgsi-scope` (ativacao idempotente + autosave de DocumentControl) criado; contrato `openapi.yaml` ganhou os paths que faltavam (aprovado pelo Bruno); migration criada mas ainda nao rodada contra Postgres real; proximo contexto recomendado para a Task 012.
 
 ## Duvidas para validacao humana
 

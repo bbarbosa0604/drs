@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { SgsiScopeModule } from './modules/sgsi-scope/sgsi-scope.module';
 import { UsersModule } from './modules/users/users.module';
 import { appConfig } from './config/app.config';
 import { createTypeOrmOptions, databaseConfig } from './config/database.config';
@@ -26,6 +27,7 @@ import { createTypeOrmOptions, databaseConfig } from './config/database.config';
     AuthModule,
     OrganizationsModule,
     ProjectsModule,
+    SgsiScopeModule,
   ],
 })
 export class AppModule {}
