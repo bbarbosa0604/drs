@@ -125,7 +125,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 003: `done`
 - Task 004: `done`
 - Task 005: `done`
-- Demais tasks (006-027): `planned`
+- Task 006: `done`
+- Demais tasks (007-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -146,6 +147,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-003.md` - Task 003 concluida (`done`); vulnerabilidade de escalacao de privilegio corrigida; proximo contexto recomendado para a Task 004.
 - `.agents/state/handoffs/TASK-004.md` - Task 004 concluida (`done`); guards de multitenancy (`OrganizationAccessGuard`/`ProjectAccessGuard`) prontos para uso; proximo contexto recomendado para a Task 005.
 - `.agents/state/handoffs/TASK-005.md` - Task 005 concluida (`done`); CRUD de Organizacao com guard aplicado; politica de exclusao com projetos ativos pendente de confirmacao humana; proximo contexto recomendado para a Task 006.
+- `.agents/state/handoffs/TASK-006.md` - Task 006 concluida (`done`); CRUD de Projeto com status/participantes/AuditLog; regra de transicao de status livre pendente de confirmacao humana; proximo contexto recomendado para a Task 007 (front-end, fora do escopo backend).
 
 ## Duvidas para validacao humana
 
