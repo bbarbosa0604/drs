@@ -1,0 +1,41 @@
+.form {
+  display: grid;
+  gap: 16px;
+  max-width: 640px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.formError {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--color-brand-tint);
+  color: var(--color-brand-primary-dark);
+  font-size: 0.875rem;
+}
+
+.submit {
+  justify-self: start;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-text-on-brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--color-accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

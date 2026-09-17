@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -156,12 +156,12 @@ ui-front
 
 ### Criterios de saida
 
-- [ ] lint/typecheck/build passam
-- [ ] validacao de formulario cobre campos obrigatorios
+- [x] lint/typecheck/build passam
+- [x] validacao de formulario cobre campos obrigatorios
 
 ## Criterios de conclusao
 
-- CRUD completo de Organizacao e Projeto navegavel via UI, com validacao e feedback de erro
+- [x] CRUD completo de Organizacao e Projeto navegavel via UI, com validacao e feedback de erro (com uma excecao registrada abaixo: participantes de projeto)
 
 ## Validacao esperada
 
@@ -173,8 +173,37 @@ ui-front
 
 ## Riscos ou ambiguidades
 
-- Nenhuma alem das ja registradas no slice
+- **Gap de contrato encontrado durante a execucao**: o formulario de Projeto deveria permitir escolher `responsibleUserId` e `participantUserIds` (PRD secao 6), mas nao existe nenhum endpoint que um Consultor comum possa chamar para listar usuarios — `GET /users` e restrito a DSR Admin (`RolesGuard`, Task 003). Sem isso, um Consultor nao tem como montar um seletor de responsavel/participantes. Decisao adotada (nao confirmada com o Bruno): `responsibleUserId` e sempre o usuario autenticado que cria o projeto (campo oculto, nao editavel no formulario); `participantUserIds` **nao e editavel nesta tela** (o backend ja aceita esse campo, mas a UI nao expõe um seletor). Ver pendencia.
+
+## Resultado da execucao
+
+- **Dependencias novas instaladas com aprovacao do Bruno**: `react-hook-form`, `zod`, `@hookform/resolvers` (glue entre os dois, necessaria para `zodResolver`, nao estava listada explicitamente na task mas e infraestrutura minima para "React Hook Form + Zod" funcionarem juntos).
+- Todas as rotas ficaram em `next-js/src/app/organizations/**` e `next-js/src/app/projects/**` (sem route group `(dashboard)`), consistente com a Task 008: este projeto nao usa `(dashboard)/`, a rota pos-login e `/` diretamente.
+- Organizacao: `/organizations` (lista, com estado vazio/erro), `/organizations/new` (criacao), `/organizations/[id]` (edicao — mesmo formulario, reaproveitado via prop `organization`). Todos os campos do PRD secao 5 estao no formulario, incluindo `values` (textarea, um valor por linha, convertido para array no submit).
+- Projeto: `/projects`, `/projects/new`, `/projects/[id]`. Campo `organizationId` e um `<select>` populado com as organizacoes do usuario (trava para edicao, so pode ser definido na criacao); `status` so aparece no formulario de edicao (create sempre nasce `DRAFT`, conforme a task pede); `responsibleUserId`/`participantUserIds` — ver ambiguidade acima.
+- Erros de validacao do backend (400) aparecem como uma mensagem unica acima do botao de salvar, nao por campo — o backend (`class-validator`) nao retorna erro estruturado por campo hoje, so uma mensagem geral; granularidade por campo ficaria para uma task que ajuste o formato de erro do backend (fora do escopo "front-end only" desta task).
+- BFF: 4 novas Route Handlers (`/api/organizations`, `/api/organizations/[id]`, `/api/projects`, `/api/projects/[id]`) leem o cookie httpOnly (Task 008) e repassam para o backend — os client components de formulario nunca veem o token.
+- Componentes reutilizaveis criados: `components/forms/Field.tsx` (label + input + erro, usado nos dois formularios) e reaproveitados `components/dashboard/{SectionCard,EmptyState}` (Task 008) para as listas/estados de erro.
+- **Mesma familia de desvio de paths ja registrada nas Tasks 007/008**: criei `next-js/src/services/**` (estendendo os services de Organization/Project ja existentes com `get`/`create`/`update`) e `next-js/src/components/forms/**`, alem de `next-js/src/app/organizations/**`/`projects/**`. Necessario porque a logica de chamada HTTP e sessao ja vive em `services/` desde a Task 008 (`next-js/docs/ai/ARCHITECTURE.md`), e duplicar isso dentro de `app/organizations/` teria quebrado a fronteira arquitetural do proprio projeto.
+
+## Arquivos alterados
+
+- Criados: `next-js/src/components/forms/Field.tsx` (+`.module.css`), `next-js/src/app/organizations/{organization-schema.ts,OrganizationForm.tsx,OrganizationForm.module.css,page.tsx,page.module.css,new/page.tsx,[id]/page.tsx}`, `next-js/src/app/projects/{project-schema.ts,ProjectForm.tsx,ProjectForm.module.css,page.tsx,page.module.css,new/page.tsx,[id]/page.tsx}`, `next-js/src/app/api/organizations/route.ts`, `next-js/src/app/api/organizations/[id]/route.ts`, `next-js/src/app/api/projects/route.ts`, `next-js/src/app/api/projects/[id]/route.ts`.
+- Modificados: `next-js/src/services/organizations/organizations.service.ts` (+`getOrganization`/`createOrganization`/`updateOrganization`), `next-js/src/services/projects/projects.service.ts` (+`getProject`/`createProject`/`updateProject`), `next-js/src/services/http/backend-client.ts` (+`toErrorResponse`), `next-js/package.json`/`package-lock.json` (novas dependencias).
+
+## Validacoes executadas
+
+- `npm run lint`: executado sem erros
+- `npm run typecheck`: executado sem erros
+- `npm run build`: executado com sucesso (13 rotas geradas)
+- Teste manual (via `next dev` + browser): confirmado que `/organizations`, `/organizations/new`, `/projects`, `/projects/new` redirecionam para `/login` sem sessao. **Fluxo completo de criacao/edicao nao testado contra o backend real** (sem Postgres/backend disponivel neste ambiente, mesma limitacao da Task 008).
+
+## Pendencias pos-task
+
+- Confirmar com o Bruno a decisao de `responsibleUserId`/`participantUserIds` (ambiguidade acima) — provavelmente exige uma nova rota de backend (ex.: `GET /organizations/:id/members` ou `GET /projects/:id/members`) antes de expor um seletor de usuarios na UI.
+- Testar o fluxo completo (criar organizacao, criar projeto, editar status) contra o backend real apos deploy.
+- Erros de validacao do backend continuam exibidos como mensagem unica, nao por campo.
 
 ## Status final
 
-planned
+done

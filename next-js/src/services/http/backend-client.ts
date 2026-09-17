@@ -53,3 +53,18 @@ export async function backendFetch<T>(
 
   return (await response.json()) as T;
 }
+
+/**
+ * Normaliza erro de `backendFetch` para uma resposta de Route Handler,
+ * sem vazar stack trace nem detalhe interno (ver docs/ai/SECURITY.md).
+ */
+export function toErrorResponse(error: unknown): {
+  status: number;
+  message: string;
+} {
+  if (error instanceof BackendApiError) {
+    return { status: error.statusCode, message: error.message };
+  }
+
+  return { status: 502, message: 'Falha ao comunicar com o backend.' };
+}

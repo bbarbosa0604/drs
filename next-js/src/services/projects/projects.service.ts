@@ -24,6 +24,18 @@ export interface Project {
   deletedAt: string | null;
 }
 
+/** Campos aceitos por `POST /projects` e `PATCH /projects/:id`. */
+export interface ProjectInput {
+  name: string;
+  organizationId: string;
+  responsibleUserId: string;
+  description?: string | null;
+  participantUserIds?: string[];
+  startDate?: string | null;
+  expectedEndDate?: string | null;
+  status?: ProjectStatus;
+}
+
 export function listProjects(
   token: string,
   organizationId?: string,
@@ -33,4 +45,31 @@ export function listProjects(
     : '';
 
   return backendFetch<Project[]>(`/projects${query}`, { token });
+}
+
+export function getProject(token: string, id: string): Promise<Project> {
+  return backendFetch<Project>(`/projects/${id}`, { token });
+}
+
+export function createProject(
+  token: string,
+  input: ProjectInput,
+): Promise<Project> {
+  return backendFetch<Project>('/projects', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateProject(
+  token: string,
+  id: string,
+  input: ProjectInput,
+): Promise<Project> {
+  return backendFetch<Project>(`/projects/${id}`, {
+    method: 'PATCH',
+    token,
+    body: JSON.stringify(input),
+  });
 }
