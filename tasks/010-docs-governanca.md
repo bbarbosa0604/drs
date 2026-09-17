@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -139,11 +139,11 @@ docs-only
 
 ### Criterios de saida
 
-- [ ] documentos criados e linkados no `tasks/000-index.md` se relevante
+- [x] documentos criados e linkados no `tasks/000-index.md` se relevante
 
 ## Criterios de conclusao
 
-- `CLAUDE.md`, `docs/architecture.md`, `docs/database.md` criados e coerentes com o que foi implementado nas Tasks 001-006
+- [x] `CLAUDE.md`, `docs/architecture.md`, `docs/database.md` criados e coerentes com o que foi implementado nas Tasks 001-009 (a task cita 001-006; o backlog ja avancou ate a Task 009 no momento da execucao, entao os tres docs tambem cobrem Tasks 007-009)
 
 ## Validacao esperada
 
@@ -157,6 +157,50 @@ docs-only
 
 - Deve ser atualizado incrementalmente conforme os slices seguintes avancam — nao e um documento estatico
 
+## Resultado da execucao
+
+- `CLAUDE.md` (raiz, novo arquivo): lista literalmente as 13 decisoes nao-negociaveis (PRD
+  secao 44) e as proibicoes de migracao do prototipo (PRD secao 38), documenta os desvios
+  ja tomados entre a stack recomendada pelo PRD (secao 24: Next.js full-stack, Prisma,
+  Tailwind, TanStack Query) e a stack real implementada (backend NestJS separado,
+  TypeORM, CSS puro + CSS Modules, sem TanStack Query), e resume o padrao de
+  multitenancy/autorizacao (404 vs 403, guards por request).
+- `docs/architecture.md` (novo): camadas do backend, multitenancy/autorizacao,
+  autenticacao/sessao (BFF com cookie httpOnly, Task 008), convencao de `services/*` no
+  next-js, e secoes explicitamente marcadas como "planejado" para diagramas, documentos
+  gerados, storage e versionamento (decisoes #8-#10 do PRD, ainda nao implementadas —
+  Slice 002+).
+- `docs/database.md` (reescrito a partir do rascunho da Task 001): formaliza as 7
+  entidades ja implementadas (User, Organization, OrganizationMember, Project,
+  ProjectMember, ModuleInstance, AuditLog) com colunas, FKs, indices e enums reais
+  (conferidos contra o codigo, nao só contra o rascunho), reafirma TypeORM como ORM (nao
+  Prisma, ver `## Convencoes`), e lista as ~24 entidades do Escopometro (PRD secao 22)
+  como pendentes, a criar incrementalmente pelos Slices 002-006.
+- Nenhuma das tres pendencias/ambiguidades ja registradas em Tasks 005/006/007/009 foi
+  resolvida aqui — esta task e de consolidacao documental, nao de decisao de produto;
+  todas foram apenas centralizadas em `CLAUDE.md`/`docs/architecture.md` para ficarem
+  visiveis a qualquer sessao futura.
+
+## Arquivos alterados
+
+- Criado: `CLAUDE.md`
+- Criado: `docs/architecture.md`
+- Reescrito: `docs/database.md` (existia como rascunho da Task 001)
+
+## Validacoes executadas
+
+- Nao ha lint/build para markdown neste projeto (task `docs-only`); validado por leitura
+  cruzada com o codigo real (`backend/src/modules/{organizations,projects}/entities/`,
+  `backend/src/common/enums/`, `next-js/src/services/`, `next-js/src/app/api/`) para
+  garantir que os documentos refletem o que foi implementado, nao so o que o PRD pede.
+
+## Pendencias pos-task
+
+- `docs/modules/sgsi-scope.md` fica para o inicio do Slice 002 (fora de escopo desta
+  task, conforme already definido).
+- Os tres documentos precisam de atualizacao incremental a cada task/slice futuro — nao
+  sao estaticos.
+
 ## Status final
 
-planned
+done
