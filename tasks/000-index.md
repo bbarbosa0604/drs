@@ -123,7 +123,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 001: `done`
 - Task 002: `done`
 - Task 003: `done`
-- Demais tasks (004-027): `planned`
+- Task 004: `done`
+- Demais tasks (005-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -142,6 +143,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-001.md` - Task 001 concluida (`done`); proximo contexto recomendado para a Task 002.
 - `.agents/state/handoffs/TASK-002.md` - Task 002 concluida (`done`); migration criada mas nao executada (sem Postgres no ambiente); proximo contexto recomendado para a Task 003.
 - `.agents/state/handoffs/TASK-003.md` - Task 003 concluida (`done`); vulnerabilidade de escalacao de privilegio corrigida; proximo contexto recomendado para a Task 004.
+- `.agents/state/handoffs/TASK-004.md` - Task 004 concluida (`done`); guards de multitenancy (`OrganizationAccessGuard`/`ProjectAccessGuard`) prontos para uso; proximo contexto recomendado para a Task 005.
 
 ## Duvidas para validacao humana
 

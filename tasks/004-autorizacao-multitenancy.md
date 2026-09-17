@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -143,13 +143,13 @@ auth-sensitive
 
 ### Criterios de saida
 
-- [ ] teste de IDOR passa (acesso cruzado bloqueado)
-- [ ] lint/test passam
+- [x] teste de IDOR passa (acesso cruzado bloqueado)
+- [x] lint/test passam
 
 ## Criterios de conclusao
 
-- Guard de organizacao/projeto aplicado a todas as rotas de Organization/Project
-- Teste automatizado comprova bloqueio de acesso cruzado entre organizacoes
+- [x] Guard de organizacao/projeto implementado e pronto para aplicacao nas rotas de Organization/Project (rotas em si sao escopo das Tasks 005/006, ainda nao existentes)
+- [x] Teste automatizado comprova bloqueio de acesso cruzado entre organizacoes (e entre projetos)
 
 ## Validacao esperada
 
@@ -161,8 +161,43 @@ auth-sensitive
 
 ## Riscos ou ambiguidades
 
-- Padrao de resposta 403 vs 404 para recurso de outra organizacao precisa ser definido e documentado em `backend/docs/ai/SECURITY.md` se ainda nao estiver
+- Padrao de resposta definido: 404 quando organizationId/projectId nao existe, 403 quando existe mas o usuario nao tem vinculo. Documentado como comentario de topo em `OrganizationsAccessService`/`ProjectsAccessService` (nao foi alterado `backend/docs/ai/SECURITY.md` por estar fora dos paths de escrita autorizados desta task; recomenda-se portar essa decisao para SECURITY.md em uma task de docs/governanca).
+- RBAC (DSR Admin vs Consultor) para acoes administrativas ja existia via `RolesGuard`/`@Roles` (Task 003); nao foi necessario recriar.
+
+## Resultado da execucao
+
+- Implementado `OrganizationsAccessService` e `ProjectsAccessService`, que recarregam o vinculo (`OrganizationMember`/`ProjectMember`) do usuario autenticado a cada request, nunca confiando apenas no payload do JWT.
+- Implementado `OrganizationAccessGuard` e `ProjectAccessGuard` (`src/common/guards/`), que leem `:organizationId`/`:projectId` dos route params, chamam os access services e retornam 404 (recurso inexistente) ou 403 (sem vinculo) conforme o caso; `UserRole.ADMIN` (DSR Admin) tem acesso irrestrito.
+- Criados `OrganizationsModule` e `ProjectsModule` minimos (sem controllers ainda) registrando as entidades via TypeORM e exportando os access services, e wireados em `AppModule`.
+- Nao foram criadas rotas HTTP de Organization/Project nesta task (isso pertence as Tasks 005/006); os guards ficam prontos para serem aplicados junto com `JwtAuthGuard` quando essas rotas forem implementadas.
+- RBAC DSR Admin/Consultor para acoes administrativas reutiliza o `RolesGuard` + `@Roles(UserRole.ADMIN)` ja existentes da Task 003.
+
+## Arquivos alterados
+
+- Criado: `backend/src/modules/organizations/organizations-access.service.ts`
+- Criado: `backend/src/modules/organizations/organizations-access.service.spec.ts`
+- Criado: `backend/src/modules/organizations/organizations.module.ts`
+- Criado: `backend/src/modules/projects/projects-access.service.ts`
+- Criado: `backend/src/modules/projects/projects-access.service.spec.ts`
+- Criado: `backend/src/modules/projects/projects.module.ts`
+- Criado: `backend/src/common/guards/organization-access.guard.ts`
+- Criado: `backend/src/common/guards/organization-access.guard.spec.ts`
+- Criado: `backend/src/common/guards/project-access.guard.ts`
+- Criado: `backend/src/common/guards/project-access.guard.spec.ts`
+- Modificado: `backend/src/app.module.ts` (registro de `OrganizationsModule`/`ProjectsModule`)
+
+## Validacoes executadas
+
+- `npm run lint`: executado sem erros
+- `npm run typecheck`: executado sem erros
+- `npm run test`: executado com sucesso (6 suites, 19 testes, incluindo os cenarios de IDOR cross-organization e cross-project)
+- `npm run build`: executado com sucesso
+
+## Pendencias pos-task
+
+- Aplicar `OrganizationAccessGuard`/`ProjectAccessGuard` nos controllers reais quando as Tasks 005 (CRUD Organizacao) e 006 (CRUD Projeto) criarem as rotas.
+- Portar a decisao 404 vs 403 para `backend/docs/ai/SECURITY.md` (fora do escopo de escrita desta task).
 
 ## Status final
 
-planned
+done
