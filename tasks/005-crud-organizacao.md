@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -140,12 +140,12 @@ api-back
 
 ### Criterios de saida
 
-- [ ] guard de acesso aplicado
-- [ ] lint/test passam
+- [x] guard de acesso aplicado
+- [x] lint/test passam
 
 ## Criterios de conclusao
 
-- CRUD completo de Organizacao com todos os campos do PRD secao 5, protegido por guard
+- [x] CRUD completo de Organizacao com todos os campos do PRD secao 5, protegido por guard
 
 ## Validacao esperada
 
@@ -157,8 +157,37 @@ api-back
 
 ## Riscos ou ambiguidades
 
-- Politica de exclusao de organizacao com projetos ativos precisa confirmacao humana
+- Politica de exclusao adotada (nao confirmada por humano ainda): bloquear DELETE com `409 Conflict` enquanto existir qualquer projeto nao deletado vinculado a organizacao, em vez de cascatear soft delete. Ver `OrganizationsService.remove` e pendencia abaixo.
+
+## Resultado da execucao
+
+- Nenhuma migration nova foi necessaria: todos os campos do PRD secao 5 ja existiam em `OrganizationEntity` desde a Task 002.
+- `OrganizationInputDto` reflete exatamente o schema `OrganizationInput` do contrato (mesmo DTO usado em `POST` e `PATCH`, com `name` sempre obrigatorio).
+- `OrganizationsService.findAllForUser` retorna todas as organizacoes para `UserRole.ADMIN` e apenas as organizacoes com `OrganizationMember` para os demais usuarios (nunca lista sem filtro de vinculo).
+- `OrganizationsService.create` persiste a organizacao e cria automaticamente o `OrganizationMember` do usuario criador com papel `CONSULTANT`, mesmo quando o criador e DSR Admin.
+- Rotas `:organizationId` (`GET`/`PATCH`/`DELETE`) usam `OrganizationAccessGuard` (Task 004) alem do `JwtAuthGuard` global do controller; `GET /organizations` e `POST /organizations` exigem apenas autenticacao.
+- `DELETE /organizations/:organizationId` retorna `204 No Content` e bloqueia com `409 Conflict` quando ha projetos (nao deletados) vinculados — decisao registrada como pendencia, nao confirmada com o Bruno.
+
+## Arquivos alterados
+
+- Criado: `backend/src/modules/organizations/dto/organization-input.dto.ts`
+- Criado: `backend/src/modules/organizations/organizations.service.ts`
+- Criado: `backend/src/modules/organizations/organizations.service.spec.ts`
+- Criado: `backend/src/modules/organizations/organizations.controller.ts`
+- Modificado: `backend/src/modules/organizations/organizations.module.ts` (controller/service registrados; `ProjectEntity` importada apenas para leitura na checagem de exclusao)
+
+## Validacoes executadas
+
+- `npm run lint`: executado sem erros
+- `npm run typecheck`: executado sem erros
+- `npm run test`: executado com sucesso (7 suites, 26 testes)
+- `npm run build`: executado com sucesso
+
+## Pendencias pos-task
+
+- Confirmar com o Bruno a politica de exclusao de organizacao com projetos ativos (bloquear vs. cascatear soft delete). Assumido "bloquear" como default seguro.
+- Endpoint nao foi testado contra Postgres real (apenas testes unitarios com repositorio mockado); recomenda-se smoke test manual apos deploy.
 
 ## Status final
 
-planned
+done
