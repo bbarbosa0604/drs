@@ -1,0 +1,17 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  background: var(--color-brand-navy);
+}
+
+.content {
+  padding: 24px;
+}
