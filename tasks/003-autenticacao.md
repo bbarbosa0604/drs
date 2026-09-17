@@ -245,7 +245,7 @@ nao se aplica (task sem UI)
 
 ## Pendencias pos-task
 
-- Rodar `npm run seed:admin` num ambiente com Postgres disponivel para criar o primeiro DSR Admin real.
+- Rodar `npm run seed:admin:prod` **dentro do container na Hostinger** (`docker compose exec -e ADMIN_NAME="..." -e ADMIN_EMAIL="..." -e ADMIN_PASSWORD="..." api npm run seed:admin:prod`) para criar o primeiro DSR Admin real, depois que a migration da Task 002 tiver rodado la.
 - Avaliar e implementar rate limiting em `/auth/login` (requer `@nestjs/throttler`, nova dependencia — human approval necessario quando for feito).
 - Reset de senha continua fora do MVP (lacuna conhecida, nao bloqueante).
 

@@ -16,5 +16,6 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm rebuild bcrypt --build-from-source \
   && apt-get purge -y python3 make g++ && apt-get autoremove -y
 COPY --from=builder /app/dist ./dist
+COPY scripts ./scripts
 EXPOSE 3000
 CMD ["node", "dist/main"]

@@ -236,7 +236,7 @@ nao se aplica (task sem UI)
 
 ## Pendencias pos-task
 
-- Executar `npm run migration:run` num ambiente com Postgres disponivel (local via `docker-compose up db` ou staging) antes de considerar o schema realmente aplicado.
+- Executar `npm run migration:run:prod` **dentro do container na Hostinger** (`docker compose exec api npm run migration:run:prod`) antes de considerar o schema realmente aplicado — producao do backend e a VPS Hostinger via Docker, front-end e Vercel. Ao investigar isso, foi encontrado e corrigido um gap separado: o `Dockerfile` de producao nao copiava `scripts/` nem tinha script que rodasse sem `ts-node` (devDependency ausente no runtime image) — ver `migration-run-prod.mjs`/`seed-admin-prod.mjs` e `npm run migration:run:prod`/`npm run seed:admin:prod`, adicionados fora desta task original.
 - Confirmar politica de exclusao de organizacao/projeto com dependencias (registrado tambem nas Tasks 005/006).
 - Decidir se `Project.participantUserIds` usara `ProjectMember` como fonte unica (recomendado) na Task 006.
 
