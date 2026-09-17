@@ -127,7 +127,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 005: `done`
 - Task 006: `done`
 - Task 007: `done`
-- Demais tasks (008-027): `planned`
+- Task 008: `done`
+- Demais tasks (009-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -150,6 +151,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-005.md` - Task 005 concluida (`done`); CRUD de Organizacao com guard aplicado; politica de exclusao com projetos ativos pendente de confirmacao humana; proximo contexto recomendado para a Task 006.
 - `.agents/state/handoffs/TASK-006.md` - Task 006 concluida (`done`); CRUD de Projeto com status/participantes/AuditLog; regra de transicao de status livre pendente de confirmacao humana; proximo contexto recomendado para a Task 007 (front-end, fora do escopo backend).
 - `.agents/state/handoffs/TASK-007.md` - Task 007 concluida (`done`); tokens Daryus + `AppShell` no next-js; contradicao entre a task e `next-js/docs/ai/STYLING.md` (Tailwind vs CSS puro) registrada como pendencia; proximo contexto recomendado para a Task 008.
+- `.agents/state/handoffs/TASK-008.md` - Task 008 concluida (`done`); dashboard real com fluxo minimo de login/sessao (gap de backlog, nenhuma task cobria login) construido para viabilizar a task; proximo contexto recomendado para a Task 009.
 
 ## Duvidas para validacao humana
 

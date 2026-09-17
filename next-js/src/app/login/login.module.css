@@ -1,0 +1,71 @@
+.page {
+  min-height: calc(100vh - 64px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: min(100%, 380px);
+  display: grid;
+  gap: 24px;
+  padding: 32px;
+  border-radius: 12px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+}
+
+.submit {
+  height: 44px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-text-on-brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--color-accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-brand-primary-dark);
+  font-size: 0.875rem;
+}
