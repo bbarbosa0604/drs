@@ -1,10 +1,576 @@
-﻿openapi: 3.1.0
+openapi: 3.1.0
 info:
-  title: Project API Contract
+  title: DRS API Contract
   version: 0.1.0
-  description: Contrato central para alinhamento entre front-end, backend e mobile.
+  description: >
+    Contrato central para alinhamento entre next-js (front-end) e backend (NestJS)
+    do DSR - Daryus Resilient Services. Cobre, nesta versao, autenticacao,
+    Organizacao e Projeto (fundacao da plataforma, Task 001/Slice 001).
 servers:
-  - url: https://api.example.com
-paths: {}
+  - url: http://localhost:3000
+    description: backend local (NestJS)
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      operationId: authLogin
+      summary: Autentica um usuario e retorna um JWT
+      security: []
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login bem-sucedido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Credenciais invalidas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/me:
+    get:
+      operationId: authMe
+      summary: Retorna o usuario autenticado
+      tags: [auth]
+      responses:
+        "200":
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Nao autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /organizations:
+    get:
+      operationId: listOrganizations
+      summary: Lista organizacoes vinculadas ao usuario autenticado
+      tags: [organizations]
+      responses:
+        "200":
+          description: Lista de organizacoes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createOrganization
+      summary: Cria uma organizacao
+      tags: [organizations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationInput"
+      responses:
+        "201":
+          description: Organizacao criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /organizations/{id}:
+    parameters:
+      - $ref: "#/components/parameters/OrganizationId"
+    get:
+      operationId: getOrganization
+      summary: Obtem uma organizacao pelo id
+      tags: [organizations]
+      responses:
+        "200":
+          description: Organizacao encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateOrganization
+      summary: Atualiza uma organizacao
+      tags: [organizations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationInput"
+      responses:
+        "200":
+          description: Organizacao atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteOrganization
+      summary: Remove (soft delete) uma organizacao
+      tags: [organizations]
+      responses:
+        "204":
+          description: Organizacao removida (soft delete)
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects:
+    get:
+      operationId: listProjects
+      summary: Lista projetos vinculados ao usuario autenticado
+      tags: [projects]
+      parameters:
+        - name: organizationId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Lista de projetos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createProject
+      summary: Cria um projeto vinculado a uma organizacao
+      tags: [projects]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectInput"
+      responses:
+        "201":
+          description: Projeto criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /projects/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getProject
+      summary: Obtem um projeto pelo id
+      tags: [projects]
+      responses:
+        "200":
+          description: Projeto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateProject
+      summary: Atualiza um projeto (inclui mudanca de status)
+      tags: [projects]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectInput"
+      responses:
+        "200":
+          description: Projeto atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteProject
+      summary: Remove (soft delete) um projeto
+      tags: [projects]
+      responses:
+        "204":
+          description: Projeto removido (soft delete)
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
-  schemas: {}
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    OrganizationId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ProjectId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Payload invalido
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Nao autenticado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Autenticado, mas sem vinculo com o recurso solicitado (organizacao/projeto)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Recurso nao encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      required: [statusCode, message]
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        error:
+          type: string
+
+    UserRole:
+      type: string
+      description: >
+        Papel global do usuario. 'admin' corresponde a DSR Admin (PRD secao 3);
+        'member' e o papel base sobre o qual o vinculo por organizacao/projeto
+        (OrganizationMember/ProjectMember) define o papel de Consultor/Especialista.
+      enum: [admin, member]
+
+    User:
+      type: object
+      description: Reflete PublicUser (backend/src/modules/users), sem passwordHash.
+      required: [id, name, email, role, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        role:
+          $ref: "#/components/schemas/UserRole"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 64
+
+    LoginResponse:
+      type: object
+      required: [accessToken, user]
+      properties:
+        accessToken:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    OrganizationMemberRole:
+      type: string
+      description: Papel do usuario dentro da organizacao (PRD secao 3, MVP).
+      enum: [CONSULTANT]
+
+    OrganizationInput:
+      type: object
+      description: Campos editaveis da Organizacao (PRD secao 5).
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: Razao social / nome
+        segment:
+          type: string
+          nullable: true
+        employeeCount:
+          type: string
+          nullable: true
+          description: Numero aproximado de colaboradores (faixa ou valor livre)
+        geographicScope:
+          type: string
+          nullable: true
+        productsServices:
+          type: string
+          nullable: true
+        logoUrl:
+          type: string
+          nullable: true
+          description: URL do logotipo (storage definitivo tratado na Task 026)
+        institutionalHistory:
+          type: string
+          nullable: true
+        business:
+          type: string
+          nullable: true
+        mission:
+          type: string
+          nullable: true
+        vision:
+          type: string
+          nullable: true
+        values:
+          type: array
+          items:
+            type: string
+
+    Organization:
+      allOf:
+        - $ref: "#/components/schemas/OrganizationInput"
+        - type: object
+          required: [id, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
+
+    ProjectStatus:
+      type: string
+      description: PRD secao 6.
+      enum:
+        [DRAFT, IN_PROGRESS, IN_REVIEW, WAITING_APPROVAL, APPROVED, ARCHIVED]
+
+    ProjectInput:
+      type: object
+      description: Campos editaveis do Projeto (PRD secao 6).
+      required: [name, organizationId, responsibleUserId]
+      properties:
+        name:
+          type: string
+        organizationId:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+        responsibleUserId:
+          type: string
+          format: uuid
+        participantUserIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        expectedEndDate:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: "#/components/schemas/ProjectStatus"
+
+    Project:
+      allOf:
+        - $ref: "#/components/schemas/ProjectInput"
+        - type: object
+          required: [id, status, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
+
+    ModuleKey:
+      type: string
+      description: Modulos do DSR disponiveis para ativacao em um Projeto (PRD secao 2).
+      enum: [SGSI_SCOPE]
+
+    ModuleInstance:
+      type: object
+      description: >
+        Conceitual nesta versao do contrato (sem endpoint proprio ainda - ver Task 011).
+        Representa a ativacao de um modulo dentro de um Projeto.
+      required: [id, projectId, moduleKey, activatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        moduleKey:
+          $ref: "#/components/schemas/ModuleKey"
+        activatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AuditAction:
+      type: string
+      description: PRD secao 21.
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE
+        - STATUS_CHANGE
+        - DOCUMENT_GENERATED
+        - SUBMITTED_FOR_REVIEW
+        - APPROVED
+
+    AuditLog:
+      type: object
+      description: >
+        Conceitual nesta versao do contrato (sem endpoint proprio ainda - ver Task 027).
+      required:
+        [id, organizationId, userId, entity, entityId, action, timestamp]
+      properties:
+        id:
+          type: string
+          format: uuid
+        organizationId:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+        entity:
+          type: string
+        entityId:
+          type: string
+          format: uuid
+        action:
+          $ref: "#/components/schemas/AuditAction"
+        timestamp:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties: true
+          nullable: true
