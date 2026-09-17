@@ -1,17 +1,17 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { SectionCard } from '@/components/dashboard/SectionCard';
 import { EmptyState } from '@/components/dashboard/EmptyState';
+import { SectionCard } from '@/components/dashboard/SectionCard';
+import { EtapaEmpresaForm } from '@/modules/sgsi-scope/etapa-empresa/EtapaEmpresaForm';
 import { getCurrentUser } from '@/services/auth/auth.service';
 import { clearSessionToken, getSessionToken } from '@/services/auth/session';
 import { BackendApiError } from '@/services/http/backend-client';
-import { listOrganizations } from '@/services/organizations/organizations.service';
+import { getOrganization } from '@/services/organizations/organizations.service';
 import { getProject } from '@/services/projects/projects.service';
-import { ProjectForm } from '../ProjectForm';
-import styles from '../page.module.css';
+import { activateSgsiScopeModule } from '@/services/sgsi-scope/sgsi-scope.service';
+import styles from '../../page.module.css';
 
-export default async function EditProjectPage({
+export default async function SgsiScopePage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -22,27 +22,23 @@ export default async function EditProjectPage({
     redirect('/login');
   }
 
-  const { id } = await params;
+  const { id: projectId } = await params;
 
   try {
-    const [user, project, organizations] = await Promise.all([
+    const project = await getProject(token, projectId);
+    const [user, organization, sgsiScope] = await Promise.all([
       getCurrentUser(token),
-      getProject(token, id),
-      listOrganizations(token),
+      getOrganization(token, project.organizationId),
+      activateSgsiScopeModule(token, projectId),
     ]);
 
     return (
-      <div className={styles.page}>
-        <h1 className={styles.title}>{project.name}</h1>
-        <Link className={styles.newAction} href={`/projects/${id}/sgsi-scope`}>
-          Abrir Escopometro SGSI
-        </Link>
-        <ProjectForm
-          project={project}
-          organizations={organizations}
-          currentUserId={user.id}
-        />
-      </div>
+      <EtapaEmpresaForm
+        projectId={projectId}
+        organization={organization}
+        documentControl={sgsiScope.documentControl}
+        currentUserName={user.name}
+      />
     );
   } catch (error) {
     if (error instanceof BackendApiError && error.statusCode === 401) {
@@ -75,10 +71,13 @@ export default async function EditProjectPage({
 
     return (
       <div className={styles.page}>
-        <SectionCard title="Nao foi possivel carregar o projeto">
+        <SectionCard title="Nao foi possivel carregar o Escopometro">
           <EmptyState
             message="O backend nao respondeu. Tente novamente."
-            action={{ label: 'Tentar novamente', href: `/projects/${id}` }}
+            action={{
+              label: 'Tentar novamente',
+              href: `/projects/${projectId}/sgsi-scope`,
+            }}
           />
         </SectionCard>
       </div>
