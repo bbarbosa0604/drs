@@ -131,7 +131,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 009: `done`
 - Task 010: `done`
 - Task 011: `done`
-- Demais tasks (012-027): `planned`
+- Task 012: `done`
+- Demais tasks (013-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -158,6 +159,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-009.md` - Task 009 concluida (`done`); CRUD de Organizacao/Projeto navegavel via UI (react-hook-form + zod, aprovado pelo Bruno); gap de contrato encontrado (sem endpoint de listagem de usuarios para Consultor) registrado como pendencia — `responsibleUserId`/`participantUserIds` simplificados; proximo contexto recomendado para a Task 010.
 - `.agents/state/handoffs/TASK-010.md` - Task 010 concluida (`done`); `CLAUDE.md`, `docs/architecture.md` e `docs/database.md` criados/formalizados, consolidando as decisoes e pendencias das Tasks 001-009; Slice 001 (Fundacao da plataforma) esta 100% `done`; proximo contexto recomendado para o inicio do Slice 002 (Task 011).
 - `.agents/state/handoffs/TASK-011.md` - Task 011 concluida (`done`); primeira task do Slice 002; modulo `sgsi-scope` (ativacao idempotente + autosave de DocumentControl) criado; contrato `openapi.yaml` ganhou os paths que faltavam (aprovado pelo Bruno); migration criada mas ainda nao rodada contra Postgres real; proximo contexto recomendado para a Task 012.
+- `.agents/state/handoffs/TASK-012.md` - Task 012 concluida (`done`); submodulo `context` (OrganizationContext + ContextAspect) com sanitizacao de HTML via `sanitize-html`; `OrganizationValue` deliberadamente nao criada (reusa campos de `Organization`, pendente de confirmacao); migration criada mas ainda nao rodada; proximo contexto recomendado para a Task 013.
 
 ## Duvidas para validacao humana
 

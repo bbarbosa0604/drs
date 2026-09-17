@@ -142,6 +142,88 @@ cobertura completa e a Task 027). Uso real hoje: `ProjectsService.update` grava
 
 Indices: `(organization_id)`, `(entity, entity_id)`.
 
+## Entidades implementadas (Slice 002 — Escopometro: Empresa & Contexto)
+
+### SgsiScope
+
+`backend/src/modules/sgsi-scope/entities/sgsi-scope.entity.ts` (Task 011). Raiz do modulo
+Escopometro dentro de um Projeto.
+
+| Coluna                               | Tipo        | Notas                                                       |
+| ------------------------------------ | ----------- | ----------------------------------------------------------- |
+| id                                   | uuid PK     |                                                             |
+| project_id                           | uuid FK     | -> `projects.id`, `ON DELETE CASCADE`, unique (1:1)         |
+| module_instance_id                   | uuid FK     | -> `module_instances.id`, `ON DELETE CASCADE`, unique (1:1) |
+| created_at / updated_at / deleted_at | timestamptz | soft delete                                                 |
+
+### SgsiScopeVersion
+
+`backend/src/modules/sgsi-scope/entities/sgsi-scope-version.entity.ts` (Task 011). So a
+raiz do versionamento (PRD secao 20) — protecao contra sobrescrita de versao aprovada e a
+Task 027.
+
+| Coluna         | Tipo                                   | Notas                                    |
+| -------------- | -------------------------------------- | ---------------------------------------- |
+| id             | uuid PK                                |                                          |
+| sgsi_scope_id  | uuid FK                                | -> `sgsi_scopes.id`, `ON DELETE CASCADE` |
+| version_number | int                                    | comeca em 1 na ativacao                  |
+| status         | varchar(20) (`SgsiScopeVersionStatus`) | default `DRAFT`; `DRAFT` \| `APPROVED`   |
+| created_at     | timestamptz                            |                                          |
+
+### DocumentControl
+
+`backend/src/modules/sgsi-scope/entities/document-control.entity.ts` (Task 011). Etapa
+1.2 (PRD secao 8.2). Criado vazio na ativacao do modulo; preenchido via autosave.
+
+| Coluna                  | Tipo        | Notas                                                          |
+| ----------------------- | ----------- | -------------------------------------------------------------- |
+| id                      | uuid PK     |                                                                |
+| sgsi_scope_id           | uuid FK     | -> `sgsi_scopes.id`, `ON DELETE CASCADE`, unique (1:1)         |
+| classification          | varchar(80) | nullable                                                       |
+| version                 | varchar(40) | nullable (versao do documento, distinta de `SgsiScopeVersion`) |
+| document_date           | date        | nullable                                                       |
+| valid_until             | date        | nullable                                                       |
+| prepared_by_user_id     | uuid FK     | -> `users.id`, `ON DELETE SET NULL`, nullable                  |
+| approved_by_user_id     | uuid FK     | -> `users.id`, `ON DELETE SET NULL`, nullable                  |
+| created_at / updated_at | timestamptz |                                                                |
+
+### OrganizationContext
+
+`backend/src/modules/sgsi-scope/context/entities/organization-context.entity.ts` (Task
+012). Etapa 2.1 (PRD secao 9.1). Criado sob demanda no primeiro autosave, nao na ativacao
+do modulo.
+
+| Coluna                  | Tipo        | Notas                                                                   |
+| ----------------------- | ----------- | ----------------------------------------------------------------------- |
+| id                      | uuid PK     |                                                                         |
+| sgsi_scope_id           | uuid FK     | -> `sgsi_scopes.id`, `ON DELETE CASCADE`, unique (1:1)                  |
+| history                 | jsonb       | nullable; envelope `{ html: string }` com HTML ja sanitizado no backend |
+| created_at / updated_at | timestamptz |                                                                         |
+
+**Nota**: "Direcionadores" (negocio/missao/visao/valores, PRD secao 9.2) **nao** viraram
+uma tabela `OrganizationValue` — sao os mesmos campos que `Organization` ja tem
+(`business`/`mission`/`vision`/`values`), reaproveitados diretamente via
+`GET`/`PATCH /organizations/:id` (Task 005). Ver `tasks/012-contexto-organizacional.md`
+para a decisao completa.
+
+### ContextAspect
+
+`backend/src/modules/sgsi-scope/context/entities/context-aspect.entity.ts` (Task 012).
+Etapas 2.3/2.4 (PRD secao 9.3/9.4) — questoes externas e internas. Sem soft delete
+(registro filho de lista, decisao deliberada de manter simples).
+
+| Coluna                  | Tipo                              | Notas                                    |
+| ----------------------- | --------------------------------- | ---------------------------------------- |
+| id                      | uuid PK                           |                                          |
+| sgsi_scope_id           | uuid FK                           | -> `sgsi_scopes.id`, `ON DELETE CASCADE` |
+| type                    | varchar(20) (`ContextAspectType`) | `EXTERNAL` \| `INTERNAL`                 |
+| title                   | varchar(160)                      | obrigatorio                              |
+| description             | text                              | nullable                                 |
+| observations            | text                              | nullable                                 |
+| created_at / updated_at | timestamptz                       |                                          |
+
+Indice: `(sgsi_scope_id)`.
+
 ## Relacionamentos (resumo)
 
 ```text
@@ -151,22 +233,28 @@ Organization 1---N Project
 Project 1---N ModuleInstance
 Organization 1---N AuditLog
 Project 0..1---N AuditLog
+
+Project 1---1 SgsiScope 1---1 ModuleInstance
+SgsiScope 1---N SgsiScopeVersion
+SgsiScope 1---1 DocumentControl
+SgsiScope 1---1 OrganizationContext
+SgsiScope 1---N ContextAspect
 ```
 
 ## Versionamento (planejado, Slice 002+)
 
-`SgsiScope`/`SgsiScopeVersion` (PRD secao 20) ainda nao existem — nenhuma migration
-criada. Quando o Slice 002 (Escopometro) comecar, a regra e: uma versao aprovada nunca e
-sobrescrita silenciosamente; uma alteracao relevante apos aprovacao gera nova versao ou
-revisao controlada (`ScopeRevision`, PRD secao 22).
+`SgsiScope`/`SgsiScopeVersion` existem desde a Task 011 (raiz do versionamento, PRD secao
+20), mas so a primeira versao rascunho e criada na ativacao. Protecao contra sobrescrita
+de versao aprovada — gerar nova versao ou revisao controlada (`ScopeRevision`, PRD secao 22) ao editar apos aprovacao — ainda **nao** implementada; e a Task 027.
 
 ## Pendente para as proximas tasks
 
-Entidades do Escopometro (`SgsiScope`, `SgsiScopeVersion`, `DocumentControl`,
-`OrganizationContext`, `OrganizationValue`, `ContextAspect`, `Stakeholder`,
+`SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext` e
+`ContextAspect` ja existem (Tasks 011/012, acima). `OrganizationValue` foi deliberadamente
+**nao** criada (ver nota em `OrganizationContext`). Restam do PRD secao 22: `Stakeholder`,
 `Requirement`, `GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`,
 `ScopeCharacteristic`, `ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
-`ArchitectureComponent`, `ArchitectureInterface`, `ScopeLocation`,
-`ScopeEmployeeGroup`, `ScopeAsset`, `ScopeProvider`, `ScopeApproval`, `ScopeRevision`,
-`GeneratedDocument` — lista completa do PRD secao 22) serao adicionadas incrementalmente
-a este documento pelas tasks correspondentes (Slices 002-006), nao de uma vez.
+`ArchitectureComponent`, `ArchitectureInterface`, `ScopeLocation`, `ScopeEmployeeGroup`,
+`ScopeAsset`, `ScopeProvider`, `ScopeApproval`, `ScopeRevision`, `GeneratedDocument` —
+serao adicionadas incrementalmente a este documento pelas tasks correspondentes (Slices
+002-006), nao de uma vez.

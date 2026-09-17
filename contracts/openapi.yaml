@@ -356,6 +356,136 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/sgsi-scope/context:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getContextSection
+      summary: Obtem a secao Contexto (Etapa 2) do Escopometro do projeto
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Secao Contexto encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/context/history:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    patch:
+      operationId: updateOrganizationContextHistory
+      summary: >
+        Autosave da Etapa 2.1 (Historico). Conteudo rico sanitizado no
+        servidor (allowlist de tags, sem script/on*/javascript:, PRD secao 30)
+        antes de persistir.
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationContextInput"
+      responses:
+        "200":
+          description: Historico atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationContext"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/context/aspects:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createContextAspect
+      summary: Cadastra uma questao externa ou interna (Etapa 2.3/2.4)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContextAspectInput"
+      responses:
+        "201":
+          description: Questao criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAspect"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/context/aspects/{aspectId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: aspectId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateContextAspect
+      summary: Atualiza uma questao externa ou interna
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContextAspectInput"
+      responses:
+        "200":
+          description: Questao atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContextAspect"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteContextAspect
+      summary: Remove uma questao externa ou interna
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Questao removida
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -732,6 +862,94 @@ components:
           type: string
           format: date-time
           nullable: true
+
+    OrganizationContextInput:
+      type: object
+      description: >
+        Etapa 2.1 (PRD secao 9.1). `historyHtml` e HTML de um editor de
+        conteudo rico; o backend sanitiza (allowlist) antes de persistir.
+      properties:
+        historyHtml:
+          type: string
+          nullable: true
+
+    OrganizationContext:
+      type: object
+      required: [id, sgsiScopeId, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sgsiScopeId:
+          type: string
+          format: uuid
+        history:
+          type: object
+          nullable: true
+          description: Envelope `{ html }` com o HTML ja sanitizado.
+          properties:
+            html:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ContextAspectType:
+      type: string
+      description: PRD secao 9.3 (EXTERNAL) / 9.4 (INTERNAL).
+      enum: [EXTERNAL, INTERNAL]
+
+    ContextAspectInput:
+      type: object
+      description: Etapa 2.3/2.4 (PRD secao 9.3/9.4).
+      required: [type, title]
+      properties:
+        type:
+          $ref: "#/components/schemas/ContextAspectType"
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        observations:
+          type: string
+          nullable: true
+
+    ContextAspect:
+      allOf:
+        - $ref: "#/components/schemas/ContextAspectInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ContextSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/context` (historico + questoes).
+      required: [organizationContext, aspects]
+      properties:
+        organizationContext:
+          allOf:
+            - $ref: "#/components/schemas/OrganizationContext"
+          nullable: true
+        aspects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContextAspect"
 
     AuditAction:
       type: string
