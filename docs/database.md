@@ -239,6 +239,9 @@ SgsiScope 1---N SgsiScopeVersion
 SgsiScope 1---1 DocumentControl
 SgsiScope 1---1 OrganizationContext
 SgsiScope 1---N ContextAspect
+SgsiScope 1---N Stakeholder
+SgsiScope 1---N ProjectRequirement N---0..1 Requirement (biblioteca global)
+SgsiScope 1---1 GovernanceCommittee 1---N GovernanceMember
 ```
 
 ## Versionamento (planejado, Slice 002+)
@@ -247,14 +250,101 @@ SgsiScope 1---N ContextAspect
 20), mas so a primeira versao rascunho e criada na ativacao. Protecao contra sobrescrita
 de versao aprovada — gerar nova versao ou revisao controlada (`ScopeRevision`, PRD secao 22) ao editar apos aprovacao — ainda **nao** implementada; e a Task 027.
 
+## Entidades implementadas (Slice 003 — Requisitos, CGSI & Declaracao de Escopo)
+
+### Stakeholder
+
+`backend/src/modules/sgsi-scope/requirements/entities/stakeholder.entity.ts` (Task 015).
+Etapa 3.1 (PRD secao 10.1).
+
+| Coluna                  | Tipo         | Notas                                    |
+| ----------------------- | ------------ | ---------------------------------------- |
+| id                      | uuid PK      |                                          |
+| sgsi_scope_id           | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE` |
+| name                    | varchar(160) | "parte interessada", obrigatorio         |
+| requirements            | text         | nullable                                 |
+| needs                   | text         | nullable                                 |
+| expectations            | text         | nullable                                 |
+| observations            | text         | nullable                                 |
+| created_at / updated_at | timestamptz  |                                          |
+
+### Requirement
+
+`backend/src/modules/sgsi-scope/requirements/entities/requirement.entity.ts` (Task 015).
+**Biblioteca global** (decisao confirmada com o usuario: nao e por-projeto), mantida pelo
+DSR Admin (`RolesGuard`, mesmo padrao de `UsersController`). Seedada na migration com as
+10 referencias legais brasileiras do PRD secao 10.2 (Constituicao Federal, LGPD, Marco
+Civil, Lei Carolina Dieckmann, Lei do Software, Lei de Direitos Autorais, Codigo Civil,
+CDC, Decreto do Comercio Eletronico, orientacoes ANPD).
+
+| Coluna                  | Tipo                                | Notas                                                          |
+| ----------------------- | ----------------------------------- | -------------------------------------------------------------- |
+| id                      | uuid PK                             |                                                                |
+| title                   | varchar(200)                        |                                                                |
+| category                | varchar(20) (`RequirementCategory`) | default `LEGAL`; `LEGAL`\|`REGULATORY`\|`CONTRACTUAL`\|`OTHER` |
+| description             | text                                | nullable                                                       |
+| created_at / updated_at | timestamptz                         |                                                                |
+
+### ProjectRequirement
+
+`backend/src/modules/sgsi-scope/requirements/entities/project-requirement.entity.ts`
+(Task 015). Requisito aplicado a um projeto — da biblioteca (`requirement_id` preenchido)
+ou customizado (`requirement_id` nulo). Campos denormalizados de proposito (ver
+comentario no codigo). Duplicar o mesmo requisito no mesmo projeto e **permitido**
+(decisao explicita do PRD/Task 015) — sem unique index em `(sgsi_scope_id, requirement_id)`.
+
+| Coluna                  | Tipo                                | Notas                                                |
+| ----------------------- | ----------------------------------- | ---------------------------------------------------- |
+| id                      | uuid PK                             |                                                      |
+| sgsi_scope_id           | uuid FK                             | -> `sgsi_scopes.id`, `ON DELETE CASCADE`             |
+| requirement_id          | uuid FK                             | -> `requirements.id`, `ON DELETE SET NULL`, nullable |
+| title                   | varchar(200)                        | copiado da biblioteca ou digitado livremente         |
+| category                | varchar(20) (`RequirementCategory`) | default `LEGAL`                                      |
+| description             | text                                | nullable                                             |
+| observations            | text                                | nullable (nota especifica do projeto)                |
+| created_at / updated_at | timestamptz                         |                                                      |
+
+### GovernanceCommittee
+
+`backend/src/modules/sgsi-scope/requirements/entities/governance-committee.entity.ts`
+(Task 015). Etapa 3.3 (PRD secao 10.3) — criado sob demanda (lazy) no primeiro autosave
+ou no primeiro membro adicionado, nao na ativacao do modulo.
+
+| Coluna                  | Tipo         | Notas                                                  |
+| ----------------------- | ------------ | ------------------------------------------------------ |
+| id                      | uuid PK      |                                                        |
+| sgsi_scope_id           | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE`, unique (1:1) |
+| name                    | varchar(160) | nullable                                               |
+| objective               | text         | nullable                                               |
+| responsibilities        | text         | nullable                                               |
+| observations            | text         | nullable                                               |
+| created_at / updated_at | timestamptz  |                                                        |
+
+### GovernanceMember
+
+`backend/src/modules/sgsi-scope/requirements/entities/governance-member.entity.ts` (Task
+015). `job_role` ("funcao") e obrigatorio — caso de borda do PRD/Task 015 ("membro sem
+funcao definida -> 400"), validado via DTO.
+
+| Coluna                  | Tipo         | Notas                                              |
+| ----------------------- | ------------ | -------------------------------------------------- |
+| id                      | uuid PK      |                                                    |
+| governance_committee_id | uuid FK      | -> `governance_committees.id`, `ON DELETE CASCADE` |
+| name                    | varchar(160) | obrigatorio                                        |
+| job_role                | varchar(120) | "funcao", obrigatorio                              |
+| area                    | varchar(120) | nullable                                           |
+| committee_role          | varchar(120) | "papel no comite" (ex.: Presidente), nullable      |
+| created_at / updated_at | timestamptz  |                                                    |
+
 ## Pendente para as proximas tasks
 
-`SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext` e
-`ContextAspect` ja existem (Tasks 011/012, acima). `OrganizationValue` foi deliberadamente
-**nao** criada (ver nota em `OrganizationContext`). Restam do PRD secao 22: `Stakeholder`,
-`Requirement`, `GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`,
-`ScopeCharacteristic`, `ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
+`SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext`,
+`ContextAspect`, `Stakeholder`, `Requirement`, `ProjectRequirement`,
+`GovernanceCommittee` e `GovernanceMember` ja existem (Tasks 011/012/015, acima).
+`OrganizationValue` foi deliberadamente **nao** criada (ver nota em
+`OrganizationContext`). Restam do PRD secao 22: `ScopeDefinition`, `ScopeCharacteristic`,
+`ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
 `ArchitectureComponent`, `ArchitectureInterface`, `ScopeLocation`, `ScopeEmployeeGroup`,
 `ScopeAsset`, `ScopeProvider`, `ScopeApproval`, `ScopeRevision`, `GeneratedDocument` —
 serao adicionadas incrementalmente a este documento pelas tasks correspondentes (Slices
-002-006), nao de uma vez.
+003-006), nao de uma vez.

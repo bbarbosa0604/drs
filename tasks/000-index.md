@@ -134,7 +134,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 012: `done`
 - Task 013: `done`
 - Task 014: `done`
-- Demais tasks (015-027): `planned`
+- Task 015: `done`
+- Demais tasks (016-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -164,6 +165,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-012.md` - Task 012 concluida (`done`); submodulo `context` (OrganizationContext + ContextAspect) com sanitizacao de HTML via `sanitize-html`; `OrganizationValue` deliberadamente nao criada (reusa campos de `Organization`, pendente de confirmacao); migration criada mas ainda nao rodada; proximo contexto recomendado para a Task 013.
 - `.agents/state/handoffs/TASK-013.md` - Task 013 concluida (`done`); UI da Etapa 1 (Empresa) com autosave real de Controle documental, dados da organizacao somente leitura (gap: sem entidade de sobreposicao por escopo), import JSON client-side sem persistencia; proximo contexto recomendado para a Task 014.
 - `.agents/state/handoffs/TASK-014.md` - Task 014 concluida (`done`); UI da Etapa 2 (Contexto) com editor TipTap (aprovado), autosave de Direcionadores via PATCH completo de Organizacao (nao parcial), CRUD basico (create/delete) de questoes externas/internas; proximo contexto recomendado para a Task 015.
+- `.agents/state/handoffs/TASK-015.md` - Task 015 concluida (`done`); primeira task do Slice 003; Stakeholder/Requirement(biblioteca global, decisao confirmada)/ProjectRequirement/GovernanceCommittee/GovernanceMember implementados; biblioteca legal seedada na migration; proximo contexto recomendado para a Task 016.
 
 ## Duvidas para validacao humana
 

@@ -486,6 +486,404 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/sgsi-scope/stakeholders:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: listStakeholders
+      summary: Lista as partes interessadas (Etapa 3.1) do projeto
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Lista de stakeholders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stakeholder"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      operationId: createStakeholder
+      summary: Cadastra uma parte interessada
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StakeholderInput"
+      responses:
+        "201":
+          description: Stakeholder criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stakeholder"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/stakeholders/{stakeholderId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: stakeholderId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateStakeholder
+      summary: Atualiza uma parte interessada
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StakeholderInput"
+      responses:
+        "200":
+          description: Stakeholder atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stakeholder"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteStakeholder
+      summary: Remove uma parte interessada
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Stakeholder removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /requirements:
+    get:
+      operationId: listRequirementsLibrary
+      summary: Lista a biblioteca global de requisitos legais/regulatorios/contratuais
+      tags: [requirements-library]
+      responses:
+        "200":
+          description: Biblioteca de requisitos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Requirement"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createRequirementInLibrary
+      summary: Adiciona um requisito a biblioteca global (DSR Admin)
+      tags: [requirements-library]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequirementInput"
+      responses:
+        "201":
+          description: Requisito criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Requirement"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /requirements/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateRequirementInLibrary
+      summary: Atualiza um requisito da biblioteca global (DSR Admin)
+      tags: [requirements-library]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequirementInput"
+      responses:
+        "200":
+          description: Requisito atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Requirement"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteRequirementFromLibrary
+      summary: Remove um requisito da biblioteca global (DSR Admin)
+      tags: [requirements-library]
+      responses:
+        "204":
+          description: Requisito removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/requirements:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: listProjectRequirements
+      summary: >
+        Retorna a biblioteca global de requisitos + os requisitos
+        selecionados/customizados deste projeto (Etapa 3.2)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Biblioteca + requisitos do projeto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectRequirementsSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      operationId: createProjectRequirement
+      summary: >
+        Aplica um requisito da biblioteca (`requirementId`) ou customizado
+        (`title`) a este projeto. Duplicar o mesmo requisito e permitido.
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectRequirementInput"
+      responses:
+        "201":
+          description: Requisito aplicado ao projeto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectRequirement"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/requirements/{projectRequirementId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: projectRequirementId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateProjectRequirement
+      summary: Atualiza um requisito aplicado ao projeto
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectRequirementInput"
+      responses:
+        "200":
+          description: Requisito atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectRequirement"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteProjectRequirement
+      summary: Remove um requisito aplicado ao projeto
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Requisito removido do projeto
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/governance:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getGovernanceSection
+      summary: Obtem o comite CGSI e seus membros (Etapa 3.3)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Comite + membros
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernanceSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateGovernanceCommittee
+      summary: Autosave dos dados do comite CGSI (cria o comite se ainda nao existir)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GovernanceCommitteeInput"
+      responses:
+        "200":
+          description: Comite atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernanceCommittee"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/governance/members:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createGovernanceMember
+      summary: Adiciona um membro ao comite CGSI (cria o comite se ainda nao existir)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GovernanceMemberInput"
+      responses:
+        "201":
+          description: Membro criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernanceMember"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/governance/members/{memberId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateGovernanceMember
+      summary: Atualiza um membro do comite CGSI
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GovernanceMemberInput"
+      responses:
+        "200":
+          description: Membro atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GovernanceMember"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteGovernanceMember
+      summary: Remove um membro do comite CGSI
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Membro removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -950,6 +1348,225 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContextAspect"
+
+    StakeholderInput:
+      type: object
+      description: Etapa 3.1 (PRD secao 10.1).
+      required: [name]
+      properties:
+        name:
+          type: string
+        requirements:
+          type: string
+          nullable: true
+        needs:
+          type: string
+          nullable: true
+        expectations:
+          type: string
+          nullable: true
+        observations:
+          type: string
+          nullable: true
+
+    Stakeholder:
+      allOf:
+        - $ref: "#/components/schemas/StakeholderInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    RequirementCategory:
+      type: string
+      description: PRD secao 10.2.
+      enum: [LEGAL, REGULATORY, CONTRACTUAL, OTHER]
+
+    RequirementInput:
+      type: object
+      description: >
+        Biblioteca global de requisitos (DSR Admin). Decisao confirmada com o
+        usuario: uma biblioteca global seedada, nao uma copia por projeto.
+      required: [title]
+      properties:
+        title:
+          type: string
+        category:
+          $ref: "#/components/schemas/RequirementCategory"
+        description:
+          type: string
+          nullable: true
+
+    Requirement:
+      allOf:
+        - $ref: "#/components/schemas/RequirementInput"
+        - type: object
+          required: [id, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ProjectRequirementInput:
+      type: object
+      description: >
+        Ou `requirementId` (da biblioteca) ou `title` (customizado) deve ser
+        informado. Duplicar o mesmo requisito no mesmo projeto e permitido.
+      properties:
+        requirementId:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+        category:
+          $ref: "#/components/schemas/RequirementCategory"
+        description:
+          type: string
+          nullable: true
+        observations:
+          type: string
+          nullable: true
+
+    ProjectRequirement:
+      allOf:
+        - $ref: "#/components/schemas/ProjectRequirementInput"
+        - type: object
+          required: [id, sgsiScopeId, title, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            title:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ProjectRequirementsSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/requirements`.
+      required: [library, selected]
+      properties:
+        library:
+          type: array
+          items:
+            $ref: "#/components/schemas/Requirement"
+        selected:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectRequirement"
+
+    GovernanceCommitteeInput:
+      type: object
+      description: Etapa 3.3 - dados do comite CGSI (PRD secao 10.3).
+      properties:
+        name:
+          type: string
+          nullable: true
+        objective:
+          type: string
+          nullable: true
+        responsibilities:
+          type: string
+          nullable: true
+        observations:
+          type: string
+          nullable: true
+
+    GovernanceCommittee:
+      allOf:
+        - $ref: "#/components/schemas/GovernanceCommitteeInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    GovernanceMemberInput:
+      type: object
+      description: >
+        Etapa 3.3 - membro do comite CGSI. `jobRole` ("funcao") e obrigatorio
+        (membro sem funcao definida -> 400).
+      required: [name, jobRole]
+      properties:
+        name:
+          type: string
+        jobRole:
+          type: string
+        area:
+          type: string
+          nullable: true
+        committeeRole:
+          type: string
+          nullable: true
+          description: "Papel no comite (ex.: Presidente, Secretario)."
+
+    GovernanceMember:
+      allOf:
+        - $ref: "#/components/schemas/GovernanceMemberInput"
+        - type: object
+          required: [id, governanceCommitteeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            governanceCommitteeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    GovernanceSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/governance`.
+      required: [committee, members]
+      properties:
+        committee:
+          allOf:
+            - $ref: "#/components/schemas/GovernanceCommittee"
+          nullable: true
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/GovernanceMember"
 
     AuditAction:
       type: string

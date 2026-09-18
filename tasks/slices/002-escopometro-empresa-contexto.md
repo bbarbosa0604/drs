@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Objetivo de negocio
 
@@ -107,4 +107,4 @@ Dentro de um projeto, o Consultor ativa o Escopometro, preenche dados da empresa
 
 ## Status final
 
-planned
+done
