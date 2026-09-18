@@ -170,20 +170,45 @@ anexos). Ainda nao implementado: `Organization.logoUrl` hoje e um campo de texto
 (URL), sem upload real (Task 005 registrou isso como fora de escopo, remetendo a Task
 026).
 
-## Auditoria
+## Auditoria (Task 027)
 
 `AuditLogEntity` (`backend/src/modules/audit-log/entities/`) existe desde a Task 002.
-Uso real ainda parcial: `ProjectsService.update` grava uma entrada `STATUS_CHANGE` quando
-o status de um projeto muda (Task 006). As demais acoes sugeridas pelo PRD secao 21
-(criacao, edicao, exclusao, geracao de documento, submissao para revisao, aprovacao) nao
-geram `AuditLog` ainda — cobertura completa e o objetivo da Task 027.
+`AuditLogService.record()` (`backend/src/modules/audit-log/`, Task 027) e agora o
+ponto **centralizado** de gravacao — "nao espalhar chamadas manuais em cada
+controller" (PRD - Task 027). Consulta paginada em
+`GET /organizations/:id/audit-log` (`AuditLogController`), guardada por
+`OrganizationAccessGuard` (qualquer membro da organizacao ve o historico, nao so DSR
+Admin — premissa adotada, ver "Pendencias": a task registrava isso como duvida humana
+nao decidida).
 
-## Versionamento (planejado, Slice 002+)
+**Pendencia real, nao decisao silenciosa**: `ProjectsService.update` (Task 006) grava
+uma entrada `STATUS_CHANGE` criando/salvando `AuditLogEntity` manualmente, de antes de
+`AuditLogService` existir. Migrar esse ponto para `AuditLogService.record()`, e
+instrumentar as demais acoes do PRD secao 21 (criacao/edicao/exclusao nos modulos do
+Escopometro, submissao para revisao, geracao de documento) nos servicos existentes
+(`ScopeDefinitionService`, `ScopeEngineService`, `LimitsService`,
+`DocumentGenerationService`, etc.) e um follow-up — fora do path de escrita da Task 027
+(`audit-log/**`, `sgsi-scope/versioning/**`), que so cobre `SgsiScopeVersion`.
 
-`SgsiScope`/`SgsiScopeVersion` (PRD secao 20) ainda nao existem. Uma versao aprovada
-nunca deve ser sobrescrita silenciosamente; uma alteracao relevante apos aprovacao deve
-originar nova versao ou revisao controlada. Modelagem detalhada fica para a task que
-criar essas entidades (Slice 002).
+## Versionamento (Task 011 + Task 027)
+
+`SgsiScope`/`SgsiScopeVersion` existem desde a Task 011 (primeira versao `DRAFT` criada
+na ativacao do modulo). A Task 027 implementou a garantia do PRD secao 20/44 ("uma
+versao aprovada nunca deve ser sobrescrita silenciosamente") em
+`backend/src/modules/sgsi-scope/versioning/SgsiScopeVersioningService`:
+
+- `requestEditableVersion(projectId, userId)` e o **unico** caminho para obter uma
+  versao em que se pode escrever: se a atual for `DRAFT`, devolve ela mesma; se for
+  `APPROVED`, cria e devolve uma nova versao `DRAFT` (`versionNumber + 1`) em vez de
+  reabrir a aprovada. Registra `AuditLog` (`CREATE`) quando cria a nova versao.
+- `approveCurrentVersion(projectId, userId)` marca a versao atual como `APPROVED`
+  (409 se ja estiver aprovada) e registra `AuditLog` (`APPROVED`).
+- **Pendencia real**: nenhum dos servicos que efetivamente editam o conteudo do escopo
+  (`ScopeDefinitionService`, `ScopeEngineService`, `LimitsService`, etc.) chama
+  `requestEditableVersion` antes de gravar — a garantia existe no `versioning/` mas
+  ainda nao esta cablada nos pontos de escrita reais, que ficam fora do path desta
+  task. Ate isso ser feito, a protecao contra sobrescrita e uma capacidade disponivel,
+  nao um comportamento automatico de toda edicao do Escopometro.
 
 ## Pendencias
 

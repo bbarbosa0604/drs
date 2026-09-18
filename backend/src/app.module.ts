@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DocumentGenerationModule } from './modules/document-generation/document-generation.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
@@ -13,6 +14,7 @@ import { RequirementsModule } from './modules/sgsi-scope/requirements/requiremen
 import { ScopeDefinitionModule } from './modules/sgsi-scope/scope-definition/scope-definition.module';
 import { ScopeEngineModule } from './modules/sgsi-scope/scope-engine/scope-engine.module';
 import { SgsiScopeModule } from './modules/sgsi-scope/sgsi-scope.module';
+import { SgsiScopeVersioningModule } from './modules/sgsi-scope/versioning/sgsi-scope-versioning.module';
 import { UsersModule } from './modules/users/users.module';
 import { appConfig } from './config/app.config';
 import { createTypeOrmOptions, databaseConfig } from './config/database.config';
@@ -40,6 +42,8 @@ import { createTypeOrmOptions, databaseConfig } from './config/database.config';
     ScopeEngineModule,
     LimitsModule,
     DocumentGenerationModule,
+    AuditLogModule,
+    SgsiScopeVersioningModule,
   ],
 })
 export class AppModule {}

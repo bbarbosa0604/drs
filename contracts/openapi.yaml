@@ -2061,6 +2061,117 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /organizations/{id}/audit-log:
+    parameters:
+      - $ref: "#/components/parameters/OrganizationId"
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    get:
+      operationId: listAuditLog
+      summary: >
+        Historico de auditoria da organizacao (PRD secao 21, Task 027),
+        paginado. Restrito por vinculo a organizacao — mesma regra de acesso
+        das demais rotas (DSR Admin irrestrito).
+      tags: [audit-log]
+      responses:
+        "200":
+          description: Pagina de entradas de auditoria
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogPage"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/versions:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: listSgsiScopeVersions
+      summary: Lista as versoes do escopo (PRD secao 20, Task 027), ordenadas por numero.
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Versoes do escopo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SgsiScopeVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/versions/request-edit:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: requestEditableSgsiScopeVersion
+      summary: >
+        Garante uma versao editavel (PRD secao 20/44, Task 027): se a versao
+        atual estiver `DRAFT`, devolve ela mesma; se estiver `APPROVED`, cria
+        uma nova versao `DRAFT` em vez de sobrescrever a aprovada.
+      tags: [sgsi-scope]
+      responses:
+        "201":
+          description: Versao editavel (existente ou nova)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SgsiScopeVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/versions/approve:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: approveSgsiScopeVersion
+      summary: Aprova a versao atual do escopo (PRD secao 20, Task 027).
+      tags: [sgsi-scope]
+      responses:
+        "201":
+          description: Versao aprovada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SgsiScopeVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Versao ja aprovada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3416,8 +3527,7 @@ components:
 
     AuditLog:
       type: object
-      description: >
-        Conceitual nesta versao do contrato (sem endpoint proprio ainda - ver Task 027).
+      description: PRD secao 21 (Task 027) — exposto via `GET /organizations/{id}/audit-log`.
       required:
         [id, organizationId, userId, entity, entityId, action, timestamp]
       properties:
@@ -3447,4 +3557,42 @@ components:
         metadata:
           type: object
           additionalProperties: true
+
+    AuditLogPage:
+      type: object
+      description: Resposta paginada de `GET /organizations/{id}/audit-log` (Task 027).
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLog"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    SgsiScopeVersion:
+      type: object
+      description: >
+        PRD secao 20/44 (Task 027). Uma versao `APPROVED` nunca e editada
+        diretamente — `POST .../versions/request-edit` cria uma nova versao
+        `DRAFT` em vez de sobrescreve-la.
+      required: [id, sgsiScopeId, versionNumber, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sgsiScopeId:
+          type: string
+          format: uuid
+        versionNumber:
+          type: integer
+        status:
+          $ref: "#/components/schemas/SgsiScopeVersionStatus"
+        createdAt:
+          type: string
+          format: date-time
           nullable: true

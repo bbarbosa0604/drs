@@ -146,7 +146,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 024: `done`
 - Task 025: `done`
 - Task 026: `done`
-- Task 027: `planned`
+- Task 027: `done`
 
 ## Dependencias cruzadas
 
@@ -188,6 +188,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-024.md` - Task 024 concluida (`done`); UI da Etapa 7 (Limites & Recursos) com 6 blocos empilhados (nao abas, para nao introduzir padrao de UI novo); **Slice 005 (023-024) esta 100% `done`**; proximo contexto recomendado para o inicio do Slice 006 (Task 025).
 - `.agents/state/handoffs/TASK-025.md` - Task 025 concluida (`done`); primeira task do Slice 006; UI da Etapa 8 (Previa & Exportacao) sem endpoint de preview agregado no backend (gap registrado, resolvido com fetch paralelo dos endpoints existentes); botoes de geracao de documento chamam endpoints que a Task 026 ainda vai criar; aprovacao humana ja obtida para as decisoes da Task 026 (docx+pptxgenjs, storage filesystem local); proximo contexto recomendado para a Task 026.
 - `.agents/state/handoffs/TASK-026.md` - Task 026 concluida (`done`); `DocumentGenerationService` completo (3 documentos MVP + download autenticado), `docx`+`pptxgenjs` instalados com aprovacao humana previa, storage = filesystem local atras de interface S3-compativel; validado manualmente fora do Jest (assinatura ZIP + conteudo dos 3 arquivos gerados); ajustou o contrato provisorio da Task 025 (`downloadUrl` removido, proxy de download novo no next-js); proximo contexto recomendado para a Task 027 (ultima do backlog atual).
+- `.agents/state/handoffs/TASK-027.md` - Task 027 concluida (`done`); **fecha o backlog atual (Tasks 001-027 100% `done`)**; `AuditLogService.record()` centralizado + `SgsiScopeVersioningService` (bloqueio real de sobrescrita de versao aprovada, testado); nenhuma migration nova (tabelas ja existiam desde Tasks 002/011); gaps reais registrados: nenhum servico de escrita do Escopometro chama a protecao de versionamento ainda, `docs/architecture.md` "Versionamento" corrigido (estava desatualizado desde a Task 011); sem proxima task planejada — exige nova rodada de planejamento.
 
 ## Duvidas para validacao humana
 

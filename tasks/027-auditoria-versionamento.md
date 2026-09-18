@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -164,4 +164,75 @@ auth-sensitive
 
 ## Status final
 
-planned
+done
+
+## Decisao humana registrada (nao decidida antes da execucao)
+
+A task listava como "Riscos ou ambiguidades" se a consulta de `AuditLog` e exclusiva
+de DSR Admin ou tambem visivel ao Consultor do proprio projeto. Adotei
+`OrganizationAccessGuard` (qualquer membro da organizacao ve o historico da propria
+organizacao, DSR Admin irrestrito) como premissa — mesmo padrao de acesso ja usado em
+todas as outras rotas de leitura do produto. **Nao confirmado explicitamente pelo
+Bruno** — registrado como pendencia, nao decisao silenciosa e irreversivel (e so uma
+checagem de leitura, facil de restringir depois se precisar).
+
+## Resultado da execucao
+
+- `AuditLogService.record()` (`backend/src/modules/audit-log/`): ponto centralizado de
+  gravacao, exportado do `AuditLogModule` para outros modulos usarem (evita "espalhar
+  chamadas manuais em cada controller", conforme a task pede).
+- `AuditLogController`: `GET /organizations/:id/audit-log`, paginado (`page`/`limit`,
+  1-100), guardado por `OrganizationAccessGuard`.
+- `SgsiScopeVersioningService` (`backend/src/modules/sgsi-scope/versioning/`):
+  `requestEditableVersion` (garantia real contra sobrescrita — cria nova versao DRAFT
+  se a atual for APPROVED) e `approveCurrentVersion` (409 se ja aprovada). Ambos
+  registram `AuditLog` via `AuditLogService`.
+- **Nenhuma migration nova necessaria** — `audit_logs` e `sgsi_scope_versions` ja
+  existem desde as Tasks 002/011 (a Security Constraints da task pedia aprovacao
+  humana para migration, mas nao houve nenhuma para pedir aprovacao).
+- **Gap real registrado** (nao decisao silenciosa): a garantia de
+  `requestEditableVersion` existe mas **nao esta cablada** nos servicos que de fato
+  editam o conteudo do escopo (`ScopeDefinitionService`, `ScopeEngineService`,
+  `LimitsService`, etc.) — chamar esse metodo antes de qualquer mutacao relevante e um
+  follow-up, fora do path de escrita desta task (`audit-log/**`,
+  `sgsi-scope/versioning/**`). Da mesma forma, `ProjectsService.update` (Task 006)
+  continua gravando `AuditLog` manualmente (criado antes deste service existir) — nao
+  foi migrado.
+
+## Arquivos alterados
+
+- Criados: `backend/src/modules/audit-log/{audit-log.service.ts,audit-log.service.spec.ts,audit-log.controller.ts,audit-log.module.ts,dto/query-audit-log.dto.ts}`,
+  `backend/src/modules/sgsi-scope/versioning/{sgsi-scope-versioning.service.ts,sgsi-scope-versioning.service.spec.ts,sgsi-scope-versioning.controller.ts,sgsi-scope-versioning.module.ts}`.
+- Modificado: `backend/src/app.module.ts`, `contracts/openapi.yaml` (4 paths + 2
+  schemas + descricao do `AuditLog` corrigida), `docs/architecture.md` (secoes
+  "Auditoria" e "Versionamento" — a segunda estava desatualizada, dizia que
+  `SgsiScope`/`SgsiScopeVersion` "ainda nao existem", quando existem desde a Task 011).
+
+## Validacoes executadas
+
+- `npm run test` (backend): 23 suites / 94 testes passando (9 novos, incluindo o teste
+  que comprova o bloqueio de sobrescrita de versao aprovada, exigido pela task).
+- `npm run lint` (com `--fix`), `npm run build` (`nest build`): OK.
+- `contracts/openapi.yaml`: parse OK via `js-yaml` (60 paths, 78 schemas).
+
+## Pendencias ou bloqueios
+
+- Consulta de `AuditLog` restrita a `OrganizationAccessGuard` — decisao nao confirmada
+  explicitamente pelo Bruno (ver secao acima).
+- `requestEditableVersion` nao esta cablada nos servicos de escrita reais do
+  Escopometro — protecao contra sobrescrita existe, mas nao e automatica ainda.
+- `ProjectsService.update` continua gravando `AuditLog` manualmente (nao migrado para
+  `AuditLogService`).
+- Cobertura de auditoria (PRD secao 21) ainda parcial: so `SgsiScopeVersion`
+  (CREATE/APPROVED) e `Project.status` (legado) geram entradas hoje.
+- Sem teste de integracao HTTP completo.
+
+## Proximo contexto recomendado
+
+Backlog atual (Tasks 001-027) esta 100% `done`. Proximos passos possiveis, todos fora
+do backlog planejado ate aqui: (1) cablar `requestEditableVersion`/`AuditLogService`
+nos servicos de escrita do Escopometro; (2) migrar `ProjectsService.update` para
+`AuditLogService`; (3) rodar as 9 migrations pendentes contra um Postgres real (todas
+criadas, nenhuma executada neste ambiente); (4) confirmar com o Bruno a decisao de
+acesso ao `AuditLog` (organizacao vs. DSR-Admin-only); (5) refinar Slice 005/006 com
+UI de auditoria, se o produto precisar dela (PRD nao especifica tela propria no MVP).
