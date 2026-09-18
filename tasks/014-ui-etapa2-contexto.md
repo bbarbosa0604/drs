@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -156,12 +156,12 @@ ui-front
 
 ### Criterios de saida
 
-- [ ] lint/typecheck/build passam
-- [ ] conteudo rico sanitizado na exibicao
+- [x] lint/typecheck/build passam
+- [x] conteudo rico sanitizado na exibicao
 
 ## Criterios de conclusao
 
-- Etapa 2 funcional com editor rico, direcionadores e questoes externas/internas
+- [x] Etapa 2 funcional com editor rico, direcionadores e questoes externas/internas
 
 ## Validacao esperada
 
@@ -173,8 +173,75 @@ ui-front
 
 ## Riscos ou ambiguidades
 
-- Escolha exata de biblioteca de editor (TipTap vs outra ProseMirror) fica a criterio da implementacao, TipTap e o sugerido pelo PRD
+- Biblioteca de editor: **TipTap** (aprovado pelo Bruno) — `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/pm`.
+- **Reconciliacao com a Task 012**: o backend guarda `OrganizationContext.history` como
+  `{ html: string }` (HTML sanitizado), nao a arvore ProseMirror/JSON completa que o PRD
+  secao 29 sugere literalmente. TipTap resolve isso bem: o editor em si nunca usa
+  `document.execCommand` (representa o conteudo internamente como um documento
+  estruturado ProseMirror, cumprindo a decisao nao-negociavel #8/#11 do PRD), so o
+  formato de transporte para salvar (`editor.getHTML()`) e HTML, compativel com o
+  contrato ja existente. A sanitizacao real acontece no backend (Task 012); o editor so
+  restringe a **allowlist de extensoes ativas** (sem code block, code inline ou linha
+  horizontal) para bater com o que o backend aceita — nao reimplementa sanitizacao no
+  client, so evita o usuario formatar algo que sumiria depois de salvar.
+
+## Resultado da execucao
+
+- Rota `/projects/:id/sgsi-scope/context` (Server Component): busca projeto + organizacao
+  - secao de contexto (`GET .../sgsi-scope/context`, Task 012) em paralelo, renderiza
+    `EtapaContextoForm`. Se o modulo nunca foi ativado (404), mostra estado vazio com link
+    de volta para a Etapa 1 (nao ha ativacao automatica aqui — so a Etapa 1 ativa).
+- `RichTextEditor` (`modules/sgsi-scope/RichTextEditor.tsx`): TipTap com toolbar minima
+  (negrito, italico, tachado, H1-H3, listas, citacao). Autosave via `useAutosave` (Task
+  013, reaproveitado) chamando `PATCH /api/projects/:id/sgsi-scope/context/history`.
+- "Direcionadores" (negocio/missao/visao/valores): formulario com autosave que reusa o
+  endpoint de Organizacao ja existente (`PATCH /api/organizations/:id`, Task 009) — como
+  esse DTO exige `name` (nao aceita PATCH parcial so dos 4 campos), o autosave sempre
+  envia o objeto `Organization` completo (ja carregado em memoria, so o campo editado
+  muda), nao um payload parcial de verdade. Efeito pratico para o usuario e identico
+  (edita so os 4 campos na tela), mas tecnicamente e um PUT-like sobre o objeto inteiro.
+- "Questoes externas/internas": `AspectList` (client component reutilizado 2x) com
+  create/delete via os novos Route Handlers (`POST`/`DELETE .../context/aspects[/:id]`).
+  Sem edicao inline nesta task (so criar/remover) — nao pedido explicitamente pela
+  especificacao, mantendo o escopo minimo.
+- `StepNav` extraido de `EtapaEmpresaForm` (Task 013) para um componente compartilhado,
+  agora com `href` real para as Etapas 1 e 2 (navegacao livre, PRD secao 7); Etapas 3-8
+  continuam so como rotulo (sem UI ainda).
+- Todos os novos Route Handlers seguem o mesmo padrao BFF ja estabelecido (leem o cookie
+  httpOnly, nunca expoem o token ao client).
+
+## Arquivos alterados
+
+- Criados: `next-js/src/services/sgsi-scope/context.service.ts`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/context/history/route.ts`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/context/aspects/route.ts`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/context/aspects/[aspectId]/route.ts`,
+  `next-js/src/app/projects/[id]/sgsi-scope/context/page.tsx`,
+  `next-js/src/modules/sgsi-scope/StepNav.tsx`,
+  `next-js/src/modules/sgsi-scope/RichTextEditor.tsx` (+css),
+  `next-js/src/modules/sgsi-scope/etapa-contexto/EtapaContextoForm.tsx` (+css),
+  `next-js/src/modules/sgsi-scope/etapa-contexto/AspectList.tsx`.
+- Modificados: `next-js/src/modules/sgsi-scope/etapa-empresa/EtapaEmpresaForm.tsx`
+  (steps extraidos para `StepNav`), `next-js/package.json`/`package-lock.json` (TipTap).
+
+## Validacoes executadas
+
+- `npm run lint`: executado sem erros
+- `npm run typecheck`: executado sem erros
+- `npm run build`: executado com sucesso (20 rotas)
+- Teste manual (via `next dev` + browser): confirmado que
+  `/projects/:id/sgsi-scope/context` redireciona para `/login` sem sessao. **Editor
+  TipTap, autosave e CRUD de questoes nao testados contra backend real** (sem
+  Postgres/backend disponivel neste ambiente, mesma limitacao das Tasks 008/009/013).
+
+## Pendencias pos-task
+
+- Testar o fluxo completo (editor, direcionadores, questoes) contra o backend real apos
+  deploy.
+- Considerar edicao inline de questoes existentes (so criar/remover foi implementado).
+- Revisitar se "Direcionadores" deveria ter um endpoint de PATCH parcial proprio em vez de
+  reusar o PATCH completo de Organizacao.
 
 ## Status final
 
-planned
+done

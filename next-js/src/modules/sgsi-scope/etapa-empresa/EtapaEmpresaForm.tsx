@@ -12,18 +12,8 @@ import type {
 import { AutosaveIndicator } from '../AutosaveIndicator';
 import { useAutosave } from '../hooks/useAutosave';
 import { ImportReferenceJson } from '../ImportReferenceJson';
+import { StepNav } from '../StepNav';
 import styles from './EtapaEmpresaForm.module.css';
-
-const STEPS = [
-  'Empresa',
-  'Contexto',
-  'Requisitos & CGSI',
-  'Escopo',
-  'Cadeia de Valor',
-  'Topologia & Arquitetura',
-  'Limites & Recursos',
-  'Previa & Exportacao',
-];
 
 async function saveDocumentControl(
   projectId: string,
@@ -67,16 +57,7 @@ export function EtapaEmpresaForm({
 
   return (
     <div className={styles.page}>
-      <nav className={styles.steps} aria-label="Etapas do Escopometro">
-        {STEPS.map((step, index) => (
-          <span
-            key={step}
-            className={index === 0 ? styles.stepActive : styles.step}
-          >
-            {index + 1}. {step}
-          </span>
-        ))}
-      </nav>
+      <StepNav projectId={projectId} activeStep={1} />
 
       <section className={styles.card} aria-labelledby="empresa-title">
         <div className={styles.cardHeader}>
