@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -167,4 +167,83 @@ infra-risk
 
 ## Status final
 
-planned
+done
+
+## Decisoes humanas obtidas antes da execucao
+
+Perguntadas ao Bruno explicitamente (Security Constraints da task exige aprovacao para
+instalar dependencia nova e configurar storage/secrets):
+
+- Bibliotecas: `docx` (DOCX) + `pptxgenjs` (PPTX) — aprovadas.
+- Storage: adapter de filesystem local por tras de uma interface compativel com S3
+  (sem provedor real nem credenciais de producao neste ambiente) — aprovado. Trocar
+  por S3/MinIO real depois e so uma nova implementacao da interface.
+
+## Resultado da execucao
+
+- `backend/src/modules/document-generation/`: `DocumentGenerationService` (3 metodos
+  publicos + `getDocumentFile` para download) + `DocumentGenerationController` (3 POST
+  - 1 GET de download) + `DocumentGenerationModule`.
+- Templates isolados do dominio (`templates/*.template.ts`), cada um recebendo so um
+  `DocumentContext` (dados ja agregados) e devolvendo um `Buffer` — nunca acessam
+  repository/entity.
+- `DocumentStorageAdapter` (interface `putObject`/`getObject`) +
+  `LocalFilesystemStorageAdapter` (implementacao de dev, salva em
+  `backend/storage/generated-documents/`, path fora do git).
+- Validacao: os 3 documentos exigem `ScopeDefinition.formalDeclaration` preenchida
+  (Etapa 4) -> 400 caso contrario. `GeneratedDocumentEntity` so e persistida **depois**
+  do upload confirmado.
+- Download autenticado: como o backend exige bearer token (nunca chega ao bundle do
+  client), o link de download nunca pode ser o backend direto — criei uma rota BFF
+  nova no next-js (`/api/projects/:id/sgsi-scope/documents/:documentId/download`, fora
+  do escopo original da Task 025) que faz o proxy autenticado do binario. Ajustei
+  tambem `next-js/src/services/sgsi-scope/documents.service.ts` (removido
+  `downloadUrl`, que a Task 025 tinha deixado como provisorio) e
+  `DocumentGenerationButtons.tsx` para montar o link a partir do `id`.
+- **Verificacao manual real** (fora do Jest, que nao roda `import()` dinamico do
+  `pptxgenjs` sem `--experimental-vm-modules`): gerei os 3 documentos via script Node
+  direto contra o `dist/` compilado, confirmei assinatura ZIP valida ("PK") nos 3
+  arquivos e o conteudo esperado dentro do XML interno de cada um (`unzip -p`).
+  Arquivos de teste descartados depois, nao commitados.
+
+## Arquivos alterados
+
+- Criados: `backend/src/common/enums/generated-document-kind.enum.ts`,
+  `backend/src/modules/document-generation/**` (module, controller, service + spec,
+  entity, `storage/{document-storage.interface,local-filesystem-storage.adapter}.ts`,
+  `templates/{document-context,scope-declaration,approval-proposal,approval-presentation}.template.ts`),
+  `backend/src/database/migrations/1700000008000-CreateGeneratedDocumentsTable.ts`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/documents/[documentId]/download/route.ts`.
+- Modificado: `backend/src/app.module.ts`, `backend/package.json`/`package-lock.json`
+  (+`docx`, `+pptxgenjs`), `contracts/openapi.yaml`, `docs/architecture.md`,
+  `docs/database.md`, `.gitignore` (raiz do projeto, +`backend/storage/`),
+  `next-js/src/services/sgsi-scope/documents.service.ts`,
+  `next-js/src/modules/sgsi-scope/etapa-previa/DocumentGenerationButtons.tsx`,
+  `next-js/src/services/http/backend-client.ts` (`getBackendUrl` exportado para reuso
+  no proxy de download).
+
+## Validacoes executadas
+
+- `npm run test` (backend): 21 suites / 86 testes passando (6 novos; o teste de PPTX
+  mockou `renderApprovalPresentationPptx` por limitacao do ts-jest com `import()`
+  dinamico do `pptxgenjs` — ver comentario no spec; validado de verdade fora do Jest,
+  acima).
+- `npm run lint` (backend, com `--fix`), `npm run build` (`nest build`): OK.
+- `npm run lint`, `npm run typecheck`, `npm run test` (next-js, vitest 9/9), `npm run
+build` (next-js, 56 rotas): OK.
+- `contracts/openapi.yaml`: parse OK via `js-yaml` (56 paths, 76 schemas).
+
+## Pendencias ou bloqueios
+
+- Migration criada, **nao executada** contra Postgres real (aprovacao humana
+  necessaria).
+- Sem teste de integracao HTTP completo (guard + controller + service reais) — so
+  unitario no service, mais a verificacao manual dos binarios.
+- `npm audit` do backend reporta vulnerabilidades na arvore de dependencias apos
+  instalar `docx`/`pptxgenjs` (transitivas, nao investigadas em profundidade nesta
+  task) — revisar com `npm audit` se for relevante antes de deploy.
+
+## Proximo contexto recomendado
+
+Task 027 (Slice 006, ultima do backlog atual) - `AuditLog` + versionamento
+`SgsiScopeVersion` (protecao contra sobrescrita de versao aprovada).

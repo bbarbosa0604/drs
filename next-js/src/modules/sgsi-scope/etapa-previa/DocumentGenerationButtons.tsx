@@ -96,7 +96,10 @@ export function DocumentGenerationButtons({ projectId }: { projectId: string }) 
               <span className={styles.status}>Gerando...</span>
             ) : null}
             {state.status === 'done' ? (
-              <a className={styles.link} href={state.document.downloadUrl}>
+              <a
+                className={styles.link}
+                href={`/api/projects/${projectId}/sgsi-scope/documents/${state.document.id}/download`}
+              >
                 Baixar {state.document.fileName}
               </a>
             ) : null}

@@ -4,6 +4,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './modules/auth/auth.module';
+import { DocumentGenerationModule } from './modules/document-generation/document-generation.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { ContextModule } from './modules/sgsi-scope/context/context.module';
@@ -38,6 +39,7 @@ import { createTypeOrmOptions, databaseConfig } from './config/database.config';
     ScopeDefinitionModule,
     ScopeEngineModule,
     LimitsModule,
+    DocumentGenerationModule,
   ],
 })
 export class AppModule {}

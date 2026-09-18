@@ -1,0 +1,6 @@
+/** Os 3 documentos do MVP (PRD secao 17). */
+export enum GeneratedDocumentKind {
+  SCOPE_DECLARATION = 'SCOPE_DECLARATION',
+  APPROVAL_PROPOSAL = 'APPROVAL_PROPOSAL',
+  APPROVAL_PRESENTATION = 'APPROVAL_PRESENTATION',
+}

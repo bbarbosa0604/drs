@@ -36,6 +36,9 @@ next-env.d.ts
 # Certificado local (ex.: HTTPS em dev)
 *.pem
 
+# Documentos gerados (Task 026) - storage local de dev, nunca versionar
+backend/storage/
+
 # Deploy
 .vercel
 

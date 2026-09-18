@@ -529,6 +529,33 @@ criada).
 Migration: `1700000007000-CreateLimitsTables.ts` — criada, **ainda nao executada**
 contra um Postgres real (mesma situacao das migrations anteriores).
 
+## Entidades implementadas (Slice 006 — Previa, Documentos & Productizacao)
+
+### GeneratedDocument
+
+`backend/src/modules/document-generation/entities/generated-document.entity.ts`
+(Task 026). PRD secao 17/21 — registro do documento gerado, desacoplado da geracao em
+si (`DocumentGenerationService`).
+
+| Coluna        | Tipo         | Notas                                                                  |
+| ------------- | ------------ | ---------------------------------------------------------------------- |
+| id            | uuid PK      |                                                                        |
+| sgsi_scope_id | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE`                               |
+| kind          | varchar(30)  | enum `SCOPE_DECLARATION \| APPROVAL_PROPOSAL \| APPROVAL_PRESENTATION` |
+| file_name     | varchar(255) |                                                                        |
+| mime_type     | varchar(160) |                                                                        |
+| storage_key   | varchar(255) | chave no storage (nunca exposta ao client)                             |
+| created_at    | timestamptz  | sem `updated_at` — imutavel apos gerado                                |
+
+Storage: `LocalFilesystemStorageAdapter` (Task 026, aprovado pelo Bruno) implementa
+`DocumentStorageAdapter` (interface minima compativel com S3 — `putObject`/`getObject`)
+salvando em `backend/storage/generated-documents/` (fora do git). Trocar por um
+provedor S3/MinIO real e so uma nova implementacao dessa interface. O registro so e
+persistido **depois** do upload confirmado — nunca marca "gerado" se o storage falhar.
+
+Migration: `1700000008000-CreateGeneratedDocumentsTable.ts` — criada, **ainda nao
+executada** contra um Postgres real.
+
 ## Pendente para as proximas tasks
 
 `SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext`,
@@ -536,10 +563,11 @@ contra um Postgres real (mesma situacao das migrations anteriores).
 `GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`, `ScopeCharacteristic`,
 `ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
 `ArchitectureComponent`, `ArchitectureInterface`, `ScopeLocation`,
-`ScopeEmployeeGroup`, `ScopeAsset`, `ScopeProvider`, `ScopeApproval` e `ScopeRevision`
-ja existem (Tasks 011/012/015/016/020/023, acima). `OrganizationValue` foi
-deliberadamente **nao** criada (ver nota em `OrganizationContext`). Resta do PRD secao
-22: `GeneratedDocument` (Task 026). O calculo de percentual de preenchimento
+`ScopeEmployeeGroup`, `ScopeAsset`, `ScopeProvider`, `ScopeApproval`,
+`ScopeRevision` e `GeneratedDocument` ja existem (Tasks 011/012/015/016/020/023/026,
+acima) — todas as entidades do PRD secao 22 estao modeladas. `OrganizationValue` foi
+deliberadamente **nao** criada (ver nota em `OrganizationContext`). O calculo de
+percentual de preenchimento
 (`fill-percentage.util.ts`, Task 016) ainda cobre so as Etapas 1-4 — estender para as
 Etapas 5-7 (Slices 004-005) nao foi pedido nem feito em nenhuma task ate aqui; fica
 registrado como lacuna, nao decisao silenciosa.

@@ -222,8 +222,17 @@ done
 - Sem endpoint de preview agregado no backend (ver "Resultado da execucao") — se um
   dia for criado, esta pagina deve passar a consumi-lo em vez de fazer 8 fetches em
   paralelo.
-- Botoes de geracao chamam endpoints que so existirao apos a Task 026.
 - Testar fluxo completo contra backend com Postgres real.
+
+## Addendum (Task 026)
+
+A Task 026 implementou o backend real e ajustou 2 pontos desta task, ambos
+documentados no proprio handoff/task da 026, nao aqui: `GeneratedDocument` (next-js)
+perdeu o campo `downloadUrl` (o backend nao pode devolver um link usavel sem o bearer
+token, que o client component nao tem) — o link de download agora e sempre
+`/api/projects/:id/sgsi-scope/documents/:documentId/download`, uma rota BFF nova que
+nao existia nesta task. `DocumentGenerationButtons.tsx` foi ajustado para montar esse
+link a partir do `id` devolvido pelo POST.
 
 ## Proximo contexto recomendado
 

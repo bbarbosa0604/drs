@@ -132,19 +132,36 @@ padrao ja usado pela Task 022 (Topologia+Arquitetura numa pagina so). Se um endp
 preview agregado for criado no futuro, esta pagina deve passar a consumi-lo em vez de
 fazer varios fetches.
 
-## Documentos gerados (decisao #9 — planejado, Task 026)
+## Documentos gerados (decisao #9 — implementado, Task 026)
 
-Ainda nao implementado. Geracao de documento (`GeneratedDocument`) deve ser um servico
-independente do CRUD do Escopometro — nao acoplado ao formulario nem gerado
-sincronamente na mesma transacao que salva o rascunho. Bibliotecas aprovadas pelo Bruno
-(Task 025): `docx` (DOCX) e `pptxgenjs` (PPTX). Storage aprovado: adapter de
-filesystem local por tras de uma interface compativel com S3 (sem provedor real nem
-credenciais de producao neste ambiente); trocar por S3/MinIO real depois e so
-configuracao, sem mudar o dominio.
-`next-js/src/services/sgsi-scope/documents.service.ts` (Task 025) ja declara o
-contrato **provisorio** que a UI espera (`POST .../documents/{scope-declaration,
-approval-proposal,approval-presentation}`) — a Task 026 deve manter compatibilidade ou
-atualizar esse arquivo junto se o contrato real for diferente.
+`backend/src/modules/document-generation/` implementa `DocumentGenerationService`
+como servico independente do CRUD do Escopometro (PRD secao 17/44) — controller so
+orquestra HTTP, toda a logica (agregar dados, validar, renderizar, subir ao storage,
+persistir) vive no service.
+
+- **Templates isolados** (`templates/*.template.ts`): cada um recebe um
+  `DocumentContext` (dados ja agregados, nunca repository/entity direto) e devolve um
+  `Buffer` — evoluir o layout do documento nao toca no dominio. `docx` (DOCX) e
+  `pptxgenjs` (PPTX), aprovados pelo Bruno (Task 025/026).
+- **Storage**: `DocumentStorageAdapter` (interface `putObject`/`getObject`, minima
+  compativel com S3) com `LocalFilesystemStorageAdapter` como implementacao de
+  desenvolvimento (aprovada pelo Bruno — sem provedor real nem credenciais de
+  producao neste ambiente), salvando em `backend/storage/generated-documents/` (fora
+  do git). Trocar por S3/MinIO real e so uma nova implementacao da interface, injetada
+  no `DocumentGenerationModule` via o token `DOCUMENT_STORAGE_ADAPTER`.
+- **Validacao**: gerar qualquer um dos 3 documentos exige `ScopeDefinition
+.formalDeclaration` preenchida (Etapa 4) — 400 caso contrario, nunca gera documento
+  incompleto silenciosamente (PRD - Task 026, casos de erro).
+- **Nunca marca "gerado" sem upload confirmado**: `GeneratedDocumentEntity` so e
+  persistida depois do `storage.putObject` resolver; se o storage falhar, a operacao
+  toda falha e nada e salvo.
+- **Download autenticado**: `GET .../documents/:documentId/download` devolve o
+  binario (o backend exige bearer token, entao o link nunca aponta direto para ele) —
+  o next-js proxya via `/api/projects/:id/sgsi-scope/documents/:documentId/download`
+  (Task 026 atualizou esse ponto da Task 025, que ainda nao existia).
+- `next-js/src/services/sgsi-scope/documents.service.ts` (Task 025, ajustado pela
+  Task 026): `GeneratedDocument` reflete o schema real do backend (sem
+  `downloadUrl` — o BFF do next-js monta esse link a partir do `id`).
 
 ## Storage (planejado)
 

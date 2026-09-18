@@ -1,23 +1,23 @@
 import { backendFetch } from '../http/backend-client';
 
-/**
- * PRD secao 17 - os 3 documentos do MVP. Contrato provisorio: o endpoint
- * real (`DocumentGenerationService`) e a Task 026, que roda depois desta
- * (Task 025) no backlog. Os tipos/paths aqui sao a interface esperada; se a
- * Task 026 definir algo diferente, atualizar este arquivo (e so este
- * arquivo - a UI nao muda) junto com a Task 026, nao antes.
- */
+/** PRD secao 17 - os 3 documentos do MVP (Task 026). */
 export type GeneratedDocumentKind =
   | 'SCOPE_DECLARATION'
   | 'APPROVAL_PROPOSAL'
   | 'APPROVAL_PRESENTATION';
 
+/**
+ * Reflete `GeneratedDocument` do backend. Sem `downloadUrl` de proposito: o
+ * backend exige bearer token, que o client component nao tem — o link de
+ * download e sempre o proxy autenticado do next-js
+ * (`/api/projects/:id/sgsi-scope/documents/:documentId/download`), montado
+ * a partir do `id` por quem consome este tipo.
+ */
 export interface GeneratedDocument {
   id: string;
   sgsiScopeId: string;
   kind: GeneratedDocumentKind;
   fileName: string;
-  downloadUrl: string;
   createdAt: string;
 }
 

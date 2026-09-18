@@ -16,7 +16,7 @@ export class BackendApiError extends Error {
   }
 }
 
-function getBackendUrl(): string {
+export function getBackendUrl(): string {
   return process.env.BACKEND_API_URL ?? 'http://localhost:3000';
 }
 

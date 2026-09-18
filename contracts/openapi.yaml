@@ -1955,6 +1955,112 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/sgsi-scope/documents/scope-declaration:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: generateScopeDeclarationDocument
+      summary: >
+        Gera a Declaracao de Escopo (DOCX, PRD secao 17, doc 1/3). 400 se a
+        declaracao formal (Etapa 4) estiver vazia — nunca gera documento
+        incompleto silenciosamente (Task 026).
+      tags: [sgsi-scope]
+      responses:
+        "201":
+          description: Documento gerado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/documents/approval-proposal:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: generateApprovalProposalDocument
+      summary: Gera a Proposta de Aprovacao (DOCX, PRD secao 17, doc 2/3).
+      tags: [sgsi-scope]
+      responses:
+        "201":
+          description: Documento gerado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/documents/approval-presentation:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: generateApprovalPresentationDocument
+      summary: Gera a Apresentacao para Aprovacao (PPTX, PRD secao 17, doc 3/3).
+      tags: [sgsi-scope]
+      responses:
+        "201":
+          description: Documento gerado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/documents/{documentId}/download:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: documentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: downloadGeneratedDocument
+      summary: >
+        Baixa o binario do documento gerado (DOCX/PPTX). Consumido via proxy
+        autenticado do next-js (BFF), nunca por link direto sem sessao.
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Binario do documento (DOCX ou PPTX)
+          content:
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.presentationml.presentation:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3267,6 +3373,34 @@ components:
           type: integer
         passedChecks:
           type: integer
+
+    GeneratedDocumentKind:
+      type: string
+      description: Os 3 documentos do MVP (PRD secao 17).
+      enum: [SCOPE_DECLARATION, APPROVAL_PROPOSAL, APPROVAL_PRESENTATION]
+
+    GeneratedDocument:
+      type: object
+      description: >
+        Registro do documento gerado (Task 026). `downloadUrl` nao vem do
+        backend — o BFF do next-js monta o link autenticado
+        (`/api/projects/:id/sgsi-scope/documents/:documentId/download`) a
+        partir do `id`.
+      required: [id, sgsiScopeId, kind, fileName, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sgsiScopeId:
+          type: string
+          format: uuid
+        kind:
+          $ref: "#/components/schemas/GeneratedDocumentKind"
+        fileName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
 
     AuditAction:
       type: string
