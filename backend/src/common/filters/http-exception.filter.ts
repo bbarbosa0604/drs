@@ -22,7 +22,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const message =
       exception instanceof HttpException
-        ? exception.message
+        ? this.extractMessage(exception)
         : 'An unexpected error occurred.';
 
     this.logger.error(
@@ -36,5 +36,35 @@ export class HttpExceptionFilter implements ExceptionFilter {
       path: request.url,
       message,
     });
+  }
+
+  /**
+   * `HttpException.message` e sempre uma string generica derivada do nome
+   * da classe (ex.: "Bad Request Exception") quando a `response` passada ao
+   * construtor nao e uma string — e o caso do `ValidationPipe`, que lanca
+   * `BadRequestException(errors)` com `errors` sendo um array de mensagens.
+   * Usar `getResponse()` (o corpo real da excecao) preserva a mensagem de
+   * validacao de verdade em vez do nome generico da classe. Bug real:
+   * antes, todo erro 400 de validacao chegava ao cliente so como "Bad
+   * Request Exception", sem indicar qual campo falhou.
+   */
+  private extractMessage(exception: HttpException): string | string[] {
+    const body = exception.getResponse();
+
+    if (typeof body === 'string') {
+      return body;
+    }
+
+    if (
+      body &&
+      typeof body === 'object' &&
+      'message' in body &&
+      (typeof (body as { message: unknown }).message === 'string' ||
+        Array.isArray((body as { message: unknown }).message))
+    ) {
+      return (body as { message: string | string[] }).message;
+    }
+
+    return exception.message;
   }
 }

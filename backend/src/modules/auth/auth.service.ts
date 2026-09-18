@@ -34,7 +34,16 @@ export class AuthService {
     };
   }
 
+  /**
+   * `GET /auth/me` deve devolver o mesmo formato `PublicUser` de
+   * `POST /auth/login` (contrato `#/components/schemas/User`, com `id`) —
+   * nao o `RequestUser` interno (com `userId`) usado por guards/decorators
+   * via `buildRequestUser`. Bug real: antes retornava `RequestUser`, o que
+   * deixava `user.id` `undefined` no frontend (ver `getCurrentUser` em
+   * `next-js/src/services/auth/auth.service.ts`) em toda pagina que usa o
+   * usuario atual como `responsibleUserId`/`preparedByUserId` etc.
+   */
   getProfile(userId: string) {
-    return this.usersService.buildRequestUser(userId);
+    return this.usersService.findOne(userId);
   }
 }
