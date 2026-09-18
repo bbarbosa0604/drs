@@ -140,7 +140,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 018: `done`
 - Task 019: `done`
 - Task 020: `done`
-- Demais tasks (021-027): `planned`
+- Task 021: `done`
+- Demais tasks (022-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -176,6 +177,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-018.md` - Task 018 concluida (`done`); UI da Etapa 4 (Escopo) + `FillPercentageIndicator` (disclaimer sempre visivel per PRD secao 16) colocado num layout compartilhado por todas as Etapas do Escopometro; Slice 003 (015-018) esta 100% `done`; proximo contexto recomendado para o inicio do Slice 004 (Task 019).
 - `.agents/state/handoffs/TASK-019.md` - Task 019 concluida (`done`); primeira task do Slice 004; camada pura dados->layout->render (`ValueChainDiagram`/`TopologyDiagram`/`ArchitectureDiagram`) em `next-js/src/modules/sgsi-scope/diagrams`, com `vitest` configurado no next-js pela primeira vez (9 testes de layout); `group` ficou como string livre ate a Task 020 criar as entidades reais; proximo contexto recomendado para a Task 020.
 - `.agents/state/handoffs/TASK-020.md` - Task 020 concluida (`done`); submodulo `backend/src/modules/sgsi-scope/scope-engine/` com as 5 entidades (ValueChainBlock/TopologyNode/TopologyLink/ArchitectureComponent/ArchitectureInterface), CRUD completo, validacao referencial (400) e exclusao bloqueada por integridade (409, recomendacao do PRD); `classification` sempre nullable; contrato `openapi.yaml` atualizado; migration criada mas nao executada (aprovacao humana necessaria); proximo contexto recomendado para as Tasks 021/022 (UI Etapas 5/6).
+- `.agents/state/handoffs/TASK-021.md` - Task 021 concluida (`done`); UI da Etapa 5 (Cadeia de Valor) com formulario + lista editavel + `ValueChainDiagram` (Task 019) sincronizado; `ScopeClassification` dos diagramas ganhou `unclassified`; `scope-engine.service.ts`/`scope-engine-options.ts` criados ja cobrindo Topologia/Arquitetura; proximo contexto recomendado para a Task 022.
 
 ## Duvidas para validacao humana
 

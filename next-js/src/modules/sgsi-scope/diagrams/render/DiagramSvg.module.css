@@ -35,6 +35,12 @@
   stroke-width: 2.5;
 }
 
+.nodeUnclassified {
+  fill: var(--color-surface-raised, #ffffff);
+  stroke: var(--diagram-scope-out-border);
+  stroke-dasharray: 4 3;
+}
+
 .labelInScope {
   fill: var(--color-text-on-brand, #ffffff);
 }

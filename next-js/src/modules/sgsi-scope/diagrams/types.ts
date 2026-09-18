@@ -4,7 +4,17 @@
  * dados -> layout, e o render (hoje em SVG) e uma camada isolada e substituivel.
  */
 
-export type ScopeClassification = 'in-scope' | 'out-scope' | 'interface';
+/**
+ * `unclassified` cobre o estado real "classificacao de escopo ausente" (PRD
+ * secao 12/44, casos de erro da Task 020) - o dominio nunca infere uma
+ * classificacao automaticamente, entao o diagrama precisa de um estilo
+ * proprio para "ainda nao classificado", nunca reusar `out-scope`.
+ */
+export type ScopeClassification =
+  | 'in-scope'
+  | 'out-scope'
+  | 'interface'
+  | 'unclassified';
 
 export interface DiagramNode {
   id: string;

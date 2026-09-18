@@ -7,12 +7,14 @@ const NODE_CLASS_BY_CLASSIFICATION: Record<ScopeClassification, string> = {
   'in-scope': styles.nodeInScope,
   'out-scope': styles.nodeOutScope,
   interface: styles.nodeInterface,
+  unclassified: styles.nodeUnclassified,
 };
 
 const LABEL_CLASS_BY_CLASSIFICATION: Record<ScopeClassification, string> = {
   'in-scope': styles.labelInScope,
   'out-scope': styles.labelOnLight,
   interface: styles.labelOnLight,
+  unclassified: styles.labelOnLight,
 };
 
 /**

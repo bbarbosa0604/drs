@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -173,4 +173,56 @@ ui-front
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- `EtapaCadeiaValorForm` (`modules/sgsi-scope/etapa-cadeia-valor/`): formulario de
+  criacao de bloco (nome, categoria, area, classificacao, descricao) + lista com
+  edicao/remocao in-place (`ValueChainBlockRow`) + `ValueChainDiagram` (Task 019)
+  sincronizado com o estado local a cada create/update/delete.
+- Blocos ordenados por categoria (`INPUT -> PRIMARY_PROCESS -> SUPPORT_PROCESS ->
+OUTPUT`) antes de alimentar o diagrama, para as linhas aparecerem numa ordem estavel
+  independente da ordem de criacao.
+- `ScopeClassification` da camada de diagramas (Task 019) ganhou um 4o valor
+  `unclassified` (estilo proprio, borda tracejada) — o PRD trata "sem classificacao"
+  como estado real (nunca inferido automaticamente), e o diagrama nao devia mentir
+  reusando o estilo de `out-scope` para isso.
+- Servico compartilhado `services/sgsi-scope/scope-engine.service.ts` e opcoes/rotulos
+  em `modules/sgsi-scope/scope-engine-options.ts` (usados tambem pela Task 022).
+- `StepNav` ganhou o href da Etapa 5.
+
+## Arquivos alterados
+
+- Criados: `next-js/src/services/sgsi-scope/scope-engine.service.ts`,
+  `next-js/src/modules/sgsi-scope/scope-engine-options.ts`,
+  `next-js/src/modules/sgsi-scope/etapa-cadeia-valor/{EtapaCadeiaValorForm,ValueChainBlockRow}.tsx`
+  (+ `.module.css`),
+  `next-js/src/app/projects/[id]/sgsi-scope/value-chain/page.tsx`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/value-chain/blocks/route.ts` (+ `[blockId]/route.ts`).
+- Modificado: `next-js/src/modules/sgsi-scope/StepNav.tsx` (hrefs 5/6),
+  `next-js/src/modules/sgsi-scope/diagrams/types.ts` (+ `unclassified`),
+  `next-js/src/modules/sgsi-scope/diagrams/render/DiagramSvg.tsx` (+`.module.css`).
+- Criado (fora do next-js): `.claude/launch.json` na raiz do scaffold (`/Users/bruno/Documents/Projetos/DRS`),
+  para permitir preview do dev server do next-js pelo Browser pane.
+
+## Validacoes executadas
+
+- `npm run lint`, `npm run typecheck`, `npm run test` (vitest, 9/9 — inclui os testes de
+  layout da Task 019, que continuam validos com o 4o valor de classificacao), `npm run
+build` (34 rotas): todos OK.
+- Manual: com um backend real rodando em `:3000` (porem com `DATABASE_ENABLED=false`,
+  sem Postgres — TypeORM nao inicializa), confirmado no browser que
+  `/projects/:id/sgsi-scope/value-chain` sem sessao redireciona para `/login`. Fluxo
+  completo (autosave, diagrama com dados reais) **nao testado** contra API real por
+  falta de Postgres neste ambiente — mesma limitacao das Tasks 011-020.
+
+## Pendencias ou bloqueios
+
+- Testar o fluxo completo (criar/editar/remover bloco, diagrama atualizando) contra o
+  backend real apos deploy/com Postgres disponivel.
+
+## Proximo contexto recomendado
+
+Task 022 (Slice 004) - UI Etapa 6 (Topologia & Arquitetura), reutilizando
+`scope-engine.service.ts` e `scope-engine-options.ts` desta task.
