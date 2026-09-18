@@ -136,7 +136,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 014: `done`
 - Task 015: `done`
 - Task 016: `done`
-- Demais tasks (017-027): `planned`
+- Task 017: `done`
+- Demais tasks (018-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -168,6 +169,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-014.md` - Task 014 concluida (`done`); UI da Etapa 2 (Contexto) com editor TipTap (aprovado), autosave de Direcionadores via PATCH completo de Organizacao (nao parcial), CRUD basico (create/delete) de questoes externas/internas; proximo contexto recomendado para a Task 015.
 - `.agents/state/handoffs/TASK-015.md` - Task 015 concluida (`done`); primeira task do Slice 003; Stakeholder/Requirement(biblioteca global, decisao confirmada)/ProjectRequirement/GovernanceCommittee/GovernanceMember implementados; biblioteca legal seedada na migration; proximo contexto recomendado para a Task 016.
 - `.agents/state/handoffs/TASK-016.md` - Task 016 concluida (`done`); ScopeDefinition/ScopeCharacteristic/ScopeBenefit (Etapa 4) + calculo de percentual de preenchimento (funcao pura, lista fechada de 22 checks cobrindo Etapas 1-4, label fixo per PRD secao 16); proximo contexto recomendado para a Task 017.
+- `.agents/state/handoffs/TASK-017.md` - Task 017 concluida (`done`); UI da Etapa 3 (Requisitos & CGSI) com os 3 blocos (stakeholders, biblioteca de requisitos vinda 100% da API, governanca com autosave); falta so a Task 018 (UI Etapa 4) para o Slice 003 (015-018) fechar; proximo contexto recomendado para a Task 018.
 
 ## Duvidas para validacao humana
 

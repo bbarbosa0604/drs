@@ -1,0 +1,101 @@
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.itemCard {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.itemTitle {
+  margin: 0;
+  font-weight: 700;
+}
+
+.itemMeta {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.removeButton {
+  border: none;
+  background: none;
+  color: var(--color-brand-primary-dark);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.removeButton:hover {
+  text-decoration: underline;
+}
+
+.addForm {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.inlineForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+
+.submit {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-text-on-brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--color-accent-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formError {
+  margin: 0;
+  color: var(--color-brand-primary-dark);
+  font-size: 0.875rem;
+}
+
+.librarySelect {
+  min-width: 220px;
+}
+
+.subheading {
+  margin: 16px 0 0;
+  font-size: 0.9375rem;
+}
+
+.autosaveRow {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -27,6 +27,7 @@ export function StepNav({
   const hrefByStep: Record<number, string> = {
     1: `/projects/${projectId}/sgsi-scope`,
     2: `/projects/${projectId}/sgsi-scope/context`,
+    3: `/projects/${projectId}/sgsi-scope/requirements`,
   };
 
   return (

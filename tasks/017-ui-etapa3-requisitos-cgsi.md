@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -154,11 +154,11 @@ ui-front
 
 ### Criterios de saida
 
-- [ ] lint/typecheck/build passam
+- [x] lint/typecheck/build passam
 
 ## Criterios de conclusao
 
-- Etapa 3 funcional com os 3 blocos (stakeholders, requisitos, CGSI)
+- [x] Etapa 3 funcional com os 3 blocos (stakeholders, requisitos, CGSI)
 
 ## Validacao esperada
 
@@ -172,6 +172,53 @@ ui-front
 
 - Nenhuma alem das ja registradas no slice
 
+## Resultado da execucao
+
+- Rota `/projects/:id/sgsi-scope/requirements` (Server Component): busca stakeholders,
+  a secao de requisitos (`{ library, selected }`, Task 015) e a secao de governanca em
+  paralelo; renderiza `EtapaRequisitosForm` com os 3 blocos.
+- **Partes interessadas**: `StakeholderBlock` — lista + formulario de adicao com os 5
+  campos exatos do PRD secao 10.1 (parte interessada, requisitos, necessidades,
+  expectativas, observacoes); remove via `DELETE`.
+- **Requisitos**: `RequirementsBlock` — biblioteca vem 100% da API (`GET
+.../requirements`, nunca hardcoded, conforme a task exige), com busca client-side por
+  titulo; "Adicionar" num item da biblioteca chama `POST` com `requirementId`; um campo
+  separado permite requisito customizado (`POST` so com `title`, sem `requirementId`).
+  Estado vazio explicito se a biblioteca nao tiver sido seedada ainda (nao erro).
+- **Governanca/CGSI**: `GovernanceBlock` — dados do comite com autosave (reaproveita
+  `useAutosave`/`AutosaveIndicator` das Tasks 011/013) + lista de membros com
+  create/delete. `jobRole` ("funcao") e obrigatorio no formulario (validacao de
+  formulario bloqueia antes de enviar, e o backend garante 400 de qualquer forma).
+- `StepNav` (Task 013/014) ganhou `href` real para a Etapa 3.
+- Todas as mutacoes passam por Route Handlers BFF novos (`/api/projects/:id/sgsi-scope/{stakeholders,requirements,governance}...`),
+  mesmo padrao ja estabelecido.
+
+## Arquivos alterados
+
+- Criados: `next-js/src/services/sgsi-scope/requirements.service.ts`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/{stakeholders,stakeholders/[stakeholderId],requirements,requirements/[projectRequirementId],governance,governance/members,governance/members/[memberId]}/route.ts`,
+  `next-js/src/app/projects/[id]/sgsi-scope/requirements/page.tsx`,
+  `next-js/src/modules/sgsi-scope/etapa-requisitos/{EtapaRequisitosForm,StakeholderBlock,RequirementsBlock,GovernanceBlock}.tsx` (+css).
+- Modificado: `next-js/src/modules/sgsi-scope/StepNav.tsx` (href da Etapa 3).
+
+## Validacoes executadas
+
+- `npm run lint`: executado sem erros
+- `npm run typecheck`: executado sem erros
+- `npm run build`: executado com sucesso (27 rotas)
+- Teste manual (via `next dev` + browser): confirmado que
+  `/projects/:id/sgsi-scope/requirements` redireciona para `/login` sem sessao. **Fluxo
+  completo (adicionar stakeholder, aplicar requisito da biblioteca, autosave do comite,
+  adicionar membro) nao testado contra backend real** (sem Postgres/backend disponivel
+  neste ambiente, mesma limitacao das tasks de UI anteriores).
+
+## Pendencias pos-task
+
+- Testar o fluxo completo contra o backend real apos deploy (incluindo a biblioteca
+  legal seedada pela migration da Task 015).
+- Sem edicao inline de stakeholders/membros/requisitos ja criados (so create/delete) —
+  nao pedido explicitamente pela task.
+
 ## Status final
 
-planned
+done
