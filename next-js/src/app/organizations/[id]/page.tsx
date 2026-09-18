@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { SectionCard } from '@/components/dashboard/SectionCard';
@@ -5,6 +6,7 @@ import { EmptyState } from '@/components/dashboard/EmptyState';
 import { clearSessionToken, getSessionToken } from '@/services/auth/session';
 import { BackendApiError } from '@/services/http/backend-client';
 import { getOrganization } from '@/services/organizations/organizations.service';
+import { listProjects } from '@/services/projects/projects.service';
 import { OrganizationForm } from '../OrganizationForm';
 import styles from '../page.module.css';
 
@@ -22,12 +24,52 @@ export default async function EditOrganizationPage({
   const { id } = await params;
 
   try {
-    const organization = await getOrganization(token, id);
+    const [organization, projects] = await Promise.all([
+      getOrganization(token, id),
+      listProjects(token, id),
+    ]);
 
     return (
       <div className={styles.page}>
         <h1 className={styles.title}>{organization.name}</h1>
-        <OrganizationForm organization={organization} />
+
+        <div className={styles.section}>
+          <div className={styles.topBar}>
+            <h2 className={styles.sectionTitle}>Projetos</h2>
+            <Link
+              className={styles.newAction}
+              href={`/projects/new?organizationId=${id}`}
+            >
+              Novo projeto
+            </Link>
+          </div>
+
+          {projects.length === 0 ? (
+            <EmptyState
+              message="Nenhum projeto nesta organizacao ainda."
+              action={{
+                label: 'Novo projeto',
+                href: `/projects/new?organizationId=${id}`,
+              }}
+            />
+          ) : (
+            <ul className={styles.list}>
+              {projects.map((project) => (
+                <li key={project.id}>
+                  <Link className={styles.item} href={`/projects/${project.id}`}>
+                    <p className={styles.itemName}>{project.name}</p>
+                    <p className={styles.itemMeta}>{project.status}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <details className={styles.details}>
+          <summary>Dados da organizacao</summary>
+          <OrganizationForm organization={organization} />
+        </details>
       </div>
     );
   } catch (error) {

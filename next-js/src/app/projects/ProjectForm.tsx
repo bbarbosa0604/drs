@@ -15,10 +15,13 @@ import {
 } from './project-schema';
 import styles from './ProjectForm.module.css';
 
-function toDefaultValues(project?: Project): ProjectFormValues {
+function toDefaultValues(
+  project?: Project,
+  defaultOrganizationId?: string,
+): ProjectFormValues {
   return {
     name: project?.name ?? '',
-    organizationId: project?.organizationId ?? '',
+    organizationId: project?.organizationId ?? defaultOrganizationId ?? '',
     description: project?.description ?? '',
     startDate: project?.startDate ?? '',
     expectedEndDate: project?.expectedEndDate ?? '',
@@ -30,10 +33,13 @@ export function ProjectForm({
   project,
   organizations,
   currentUserId,
+  defaultOrganizationId,
 }: {
   project?: Project;
   organizations: Organization[];
   currentUserId: string;
+  /** Pre-seleciona a organizacao ao chegar de `/organizations/:id` (Novo projeto). */
+  defaultOrganizationId?: string;
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
@@ -43,7 +49,7 @@ export function ProjectForm({
     formState: { errors, isSubmitting },
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
-    defaultValues: toDefaultValues(project),
+    defaultValues: toDefaultValues(project, defaultOrganizationId),
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -97,7 +103,7 @@ export function ProjectForm({
           className={fieldStyles.select}
           id="organizationId"
           {...register('organizationId')}
-          disabled={Boolean(project)}
+          disabled={Boolean(project) || Boolean(defaultOrganizationId)}
         >
           <option value="">Selecione...</option>
           {organizations.map((organization) => (

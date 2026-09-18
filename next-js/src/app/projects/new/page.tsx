@@ -7,16 +7,20 @@ import { listOrganizations } from '@/services/organizations/organizations.servic
 import { ProjectForm } from '../ProjectForm';
 import styles from '../page.module.css';
 
-export default async function NewProjectPage() {
+export default async function NewProjectPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ organizationId?: string }>;
+}) {
   const token = await getSessionToken();
 
   if (!token) {
     redirect('/login');
   }
 
-  const [user, organizations] = await Promise.all([
-    getCurrentUser(token),
-    listOrganizations(token),
+  const [{ organizationId }, [user, organizations]] = await Promise.all([
+    searchParams,
+    Promise.all([getCurrentUser(token), listOrganizations(token)]),
   ]);
 
   return (
@@ -28,7 +32,11 @@ export default async function NewProjectPage() {
           action={{ label: 'Nova organizacao', href: '/organizations/new' }}
         />
       ) : (
-        <ProjectForm organizations={organizations} currentUserId={user.id} />
+        <ProjectForm
+          organizations={organizations}
+          currentUserId={user.id}
+          defaultOrganizationId={organizationId}
+        />
       )}
     </div>
   );

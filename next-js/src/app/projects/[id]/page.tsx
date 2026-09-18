@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { SectionCard } from '@/components/dashboard/SectionCard';
 import { EmptyState } from '@/components/dashboard/EmptyState';
+import { SolutionsGrid } from '@/modules/dsr-solutions/SolutionsGrid';
 import { getCurrentUser } from '@/services/auth/auth.service';
 import { clearSessionToken, getSessionToken } from '@/services/auth/session';
 import { BackendApiError } from '@/services/http/backend-client';
@@ -11,7 +11,7 @@ import { getProject } from '@/services/projects/projects.service';
 import { ProjectForm } from '../ProjectForm';
 import styles from '../page.module.css';
 
-export default async function EditProjectPage({
+export default async function ProjectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -34,14 +34,20 @@ export default async function EditProjectPage({
     return (
       <div className={styles.page}>
         <h1 className={styles.title}>{project.name}</h1>
-        <Link className={styles.newAction} href={`/projects/${id}/sgsi-scope`}>
-          Abrir Escopometro SGSI
-        </Link>
-        <ProjectForm
-          project={project}
-          organizations={organizations}
-          currentUserId={user.id}
-        />
+
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Solucoes DSR</h2>
+          <SolutionsGrid projectId={id} />
+        </div>
+
+        <details className={styles.details}>
+          <summary>Dados do projeto</summary>
+          <ProjectForm
+            project={project}
+            organizations={organizations}
+            currentUserId={user.id}
+          />
+        </details>
       </div>
     );
   } catch (error) {
