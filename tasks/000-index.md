@@ -138,7 +138,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 016: `done`
 - Task 017: `done`
 - Task 018: `done`
-- Demais tasks (019-027): `planned`
+- Task 019: `done`
+- Demais tasks (020-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -172,6 +173,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-016.md` - Task 016 concluida (`done`); ScopeDefinition/ScopeCharacteristic/ScopeBenefit (Etapa 4) + calculo de percentual de preenchimento (funcao pura, lista fechada de 22 checks cobrindo Etapas 1-4, label fixo per PRD secao 16); proximo contexto recomendado para a Task 017.
 - `.agents/state/handoffs/TASK-017.md` - Task 017 concluida (`done`); UI da Etapa 3 (Requisitos & CGSI) com os 3 blocos (stakeholders, biblioteca de requisitos vinda 100% da API, governanca com autosave); falta so a Task 018 (UI Etapa 4) para o Slice 003 (015-018) fechar; proximo contexto recomendado para a Task 018.
 - `.agents/state/handoffs/TASK-018.md` - Task 018 concluida (`done`); UI da Etapa 4 (Escopo) + `FillPercentageIndicator` (disclaimer sempre visivel per PRD secao 16) colocado num layout compartilhado por todas as Etapas do Escopometro; Slice 003 (015-018) esta 100% `done`; proximo contexto recomendado para o inicio do Slice 004 (Task 019).
+- `.agents/state/handoffs/TASK-019.md` - Task 019 concluida (`done`); primeira task do Slice 004; camada pura dados->layout->render (`ValueChainDiagram`/`TopologyDiagram`/`ArchitectureDiagram`) em `next-js/src/modules/sgsi-scope/diagrams`, com `vitest` configurado no next-js pela primeira vez (9 testes de layout); `group` ficou como string livre ate a Task 020 criar as entidades reais; proximo contexto recomendado para a Task 020.
 
 ## Duvidas para validacao humana
 

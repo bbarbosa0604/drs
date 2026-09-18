@@ -83,14 +83,34 @@ Ver detalhe em `CLAUDE.md#multitenancy-e-autorizacao`. Resumo tecnico:
   bloqueando exclusao com projetos ativos; `ProjectsService.update` decidindo quando
   gravar `AuditLog`).
 
-## Diagramas (decisao #8 — planejado, Slice 002+)
+## Diagramas (decisao #8 — camada implementada na Task 019, entidades pendentes na Task 020)
 
-Ainda nao implementado. Quando o Slice 002 (Etapas 5/6 do Escopometro — Cadeia de Valor,
-Topologia & Arquitetura) comecar, os diagramas devem ser **derivados de dados
-estruturados** (`ValueChainBlock`, `TopologyNode`, `TopologyLink`, `ArchitectureComponent`,
-`ArchitectureInterface` — ver `docs/database.md`), nunca desenhados a mao livre ou
-armazenados como imagem estatica editavel. A biblioteca de renderizacao sera escolhida na
-task que implementar a Etapa 5 (Task 021), nao antes.
+`next-js/src/modules/sgsi-scope/diagrams/` implementa a camada tecnica pura exigida pelo
+PRD (secoes 12, 13, 37, 44): os diagramas sao **derivados de dados estruturados**, nunca
+desenhados a mao livre ou armazenados como imagem estatica editavel, e o dominio nunca
+depende diretamente de SVG.
+
+- Contrato de dados comum em `types.ts`: `DiagramNode` (com `classification: 'in-scope' |
+'out-scope' | 'interface'` e `group` livre), `DiagramConnection`, `DiagramData` (entrada)
+  e `DiagramLayout` (saida, com nos/conexoes posicionados).
+- Layout e uma funcao pura `DiagramData -> DiagramLayout`, testavel sem DOM
+  (`layout/sequential-layout.ts` para linhas agrupadas — usado pela Cadeia de Valor;
+  `layout/grouped-column-layout.ts` para colunas agrupadas — usado por Topologia e
+  Arquitetura). Conexao para no inexistente e omitida e reportada em
+  `invalidConnectionIds`, sem quebrar o restante do diagrama.
+- Render e uma camada isolada e substituivel (`render/DiagramSvg.tsx`, escolha inicial SVG)
+  que so conhece `DiagramLayout` — trocar a tecnologia de renderizacao no futuro nao exige
+  mudar o modelo de dados nem os modulos de layout.
+- Componentes publicos por diagrama: `ValueChainDiagram`, `TopologyDiagram`,
+  `ArchitectureDiagram` (barrel em `diagrams/index.ts`).
+- Cores de classificacao de escopo (grafite/navy = dentro do escopo, cinza claro = fora do
+  escopo, contorno laranja = interface) escopadas em `render/DiagramSvg.module.css`,
+  derivadas dos tokens Daryus (`--color-brand-navy`, `--color-brand-primary`).
+
+Pendente (Task 020): as entidades reais (`ValueChainBlock`, `TopologyNode`, `TopologyLink`,
+`ArchitectureComponent`, `ArchitectureInterface` — ver `docs/database.md`) e os endpoints
+que alimentam `DiagramData` a partir do backend. As UIs das Etapas 5/6 (Tasks 021/022)
+consomem esta camada, nao implementam layout/render proprios.
 
 ## Documentos gerados (decisao #9 — planejado, Task 026)
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -177,4 +177,54 @@ cross-stack
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- Contrato de dados comum (`types.ts`): `DiagramNode`/`DiagramConnection`/`DiagramData`
+  (entrada) e `PositionedNode`/`PositionedConnection`/`DiagramLayout` (saida).
+  `classification` fecha em `'in-scope' | 'out-scope' | 'interface'`; `group` e livre (as
+  entidades reais da Task 020 ainda nao existem, entao o agrupamento nao foi acoplado a um
+  enum fixo).
+- Layout puro e testavel sem DOM: `layout/sequential-layout.ts` (linhas por `group`, usado
+  pela Cadeia de Valor) e `layout/grouped-column-layout.ts` (colunas por `group`, usado por
+  Topologia e Arquitetura), ambos sobre `layout/connections.ts` (resolve conexoes e reporta
+  `invalidConnectionIds` para no inexistente sem quebrar o restante).
+- Render isolado e substituivel: `render/DiagramSvg.tsx` + `render/DiagramSvg.module.css`
+  (cores de classificacao derivadas dos tokens Daryus, escopadas no CSS module do proprio
+  diagrama, nao em `globals.css`, por causa da restricao de path de escrita da task).
+- 3 componentes publicos (`ValueChainDiagram`, `TopologyDiagram`, `ArchitectureDiagram`) +
+  barrel `index.ts`.
+- Runner de teste (`vitest`) configurado no `next-js` pela primeira vez —
+  `next-js/docs/ai/QA.md` ainda diz "esta stack nao tem runner de teste configurado"; esse
+  doc ficou desatualizado por esta task e deveria ser corrigido numa proxima passada (mesmo
+  padrao de contradicao ja visto com `STYLING.md`, ver `CLAUDE.md`).
+
+## Arquivos alterados
+
+- Criados: `next-js/vitest.config.ts`,
+  `next-js/src/modules/sgsi-scope/diagrams/{types.ts,index.ts,value-chain-diagram.ts,topology-diagram.ts,architecture-diagram.ts,ValueChainDiagram.tsx,TopologyDiagram.tsx,ArchitectureDiagram.tsx}`,
+  `.../diagrams/layout/{geometry.ts,connections.ts,sequential-layout.ts,grouped-column-layout.ts}`,
+  `.../diagrams/render/{DiagramSvg.tsx,DiagramSvg.module.css}`,
+  `.../diagrams/__tests__/{sequential-layout.test.ts,grouped-column-layout.test.ts,diagrams.test.ts}`.
+- Modificado: `next-js/package.json` (scripts `test`/`test:watch`; `vitest` como
+  devDependency ja estava adicionado, sem uso, de uma preparacao anterior desta mesma
+  task), `next-js/package-lock.json`, `docs/architecture.md` (secao "Diagramas"
+  formalizada com o que foi implementado).
+
+## Validacoes executadas
+
+- `npm run test` (vitest): 9 testes, 3 arquivos, todos passando (layout puro, sem DOM).
+- `npm run lint` OK, `npm run typecheck` OK, `npm run build` OK (33 rotas, sem alteracao —
+  esta task nao adiciona rota, so a camada consumida pelas Tasks 021/022).
+
+## Pendencias ou bloqueios
+
+- `next-js/docs/ai/QA.md` desatualizado (diz que nao ha runner de teste configurado).
+- Render validado apenas via `viewBox`/estrutura SVG e testes de layout; nao houve
+  verificacao visual manual no browser (sem dados reais ainda — Task 020 cria as
+  entidades e os endpoints que alimentam `DiagramData`).
+- `group` ficou como `string` livre nos tipos porque as entidades da Task 020 ainda nao
+  existem; ao criar `ValueChainBlock`/`TopologyNode`/etc., confirmar se o valor de
+  `group` mapeia 1:1 para um campo da entidade ou precisa de adaptacao no service que
+  monta `DiagramData`.

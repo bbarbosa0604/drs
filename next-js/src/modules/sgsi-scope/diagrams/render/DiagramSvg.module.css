@@ -1,0 +1,60 @@
+.diagram {
+  /* Cores de classificacao de escopo derivadas dos tokens Daryus (ver
+     design-system/front/brand/daryus-tokens.md e a regra de aderencia visual
+     da Task 019): grafite/navy = dentro do escopo, cinza claro = fora do
+     escopo, contorno laranja = interface. Escopadas aqui (nao em globals.css)
+     porque so o diagrama usa essa semantica. */
+  --diagram-scope-in: var(--color-brand-navy, #1d2833);
+  --diagram-scope-out: #e2e8f0;
+  --diagram-scope-out-border: var(--color-border, #cbd5e1);
+  --diagram-scope-interface-border: var(--color-brand-primary, #ff6920);
+  --diagram-connection: var(--color-text-secondary, #4b5563);
+
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.node {
+  stroke-width: 1.5;
+}
+
+.nodeInScope {
+  fill: var(--diagram-scope-in);
+  stroke: var(--diagram-scope-in);
+}
+
+.nodeOutScope {
+  fill: var(--diagram-scope-out);
+  stroke: var(--diagram-scope-out-border);
+}
+
+.nodeInterface {
+  fill: var(--diagram-scope-out);
+  stroke: var(--diagram-scope-interface-border);
+  stroke-width: 2.5;
+}
+
+.labelInScope {
+  fill: var(--color-text-on-brand, #ffffff);
+}
+
+.labelOnLight {
+  fill: var(--color-text-primary, #070a0d);
+}
+
+.connection {
+  stroke: var(--diagram-connection);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.connectionLabel {
+  fill: var(--diagram-connection);
+  font-size: 11px;
+}
+
+.empty {
+  color: var(--color-text-secondary, #4b5563);
+  font-size: 0.875rem;
+}
