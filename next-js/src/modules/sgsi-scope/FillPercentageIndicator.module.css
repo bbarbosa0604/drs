@@ -1,0 +1,49 @@
+.wrapper {
+  display: grid;
+  gap: 6px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.percentage {
+  margin: 0;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  /* Cor neutra de proposito: nao usar verde/vermelho de aprovado/reprovado
+     (PRD secao 16 — o indicador nao avalia qualidade ou adequacao). */
+  color: var(--color-text-primary);
+}
+
+.track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--color-brand-navy);
+}
+
+.disclaimer {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}

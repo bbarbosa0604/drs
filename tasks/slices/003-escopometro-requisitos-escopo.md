@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Objetivo de negocio
 
@@ -104,4 +104,4 @@ O Consultor cadastra stakeholders e requisitos (usando uma biblioteca inicial de
 
 ## Status final
 
-planned
+done

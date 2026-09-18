@@ -28,6 +28,7 @@ export function StepNav({
     1: `/projects/${projectId}/sgsi-scope`,
     2: `/projects/${projectId}/sgsi-scope/context`,
     3: `/projects/${projectId}/sgsi-scope/requirements`,
+    4: `/projects/${projectId}/sgsi-scope/scope-definition`,
   };
 
   return (

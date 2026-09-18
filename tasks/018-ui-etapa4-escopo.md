@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -154,12 +154,12 @@ ui-front
 
 ### Criterios de saida
 
-- [ ] lint/typecheck/build passam
-- [ ] texto do indicador revisado contra a regra do PRD secao 16
+- [x] lint/typecheck/build passam
+- [x] texto do indicador revisado contra a regra do PRD secao 16
 
 ## Criterios de conclusao
 
-- Etapa 4 funcional; indicador de percentual visivel com disclaimer correto
+- [x] Etapa 4 funcional; indicador de percentual visivel com disclaimer correto
 
 ## Validacao esperada
 
@@ -173,6 +173,57 @@ ui-front
 
 - Nenhuma alem das ja registradas no slice
 
+## Resultado da execucao
+
+- `FillPercentageIndicator` (`modules/sgsi-scope/FillPercentageIndicator.tsx`): mostra o
+  label literal vindo da API ("Percentual de preenchimento do Escopometro"), uma barra de
+  progresso em cor neutra (navy da marca, nunca verde/vermelho de aprovado/reprovado), e
+  um **disclaimer sempre visivel** (paragrafo abaixo da barra, nao tooltip escondido)
+  dizendo explicitamente que o indicador nao mede conformidade ISO 27001, maturidade,
+  qualidade, prontidao ou adequacao — texto revisado linha a linha contra a lista de
+  proibicoes do PRD secao 16.
+- O indicador foi colocado em `next-js/src/app/projects/[id]/sgsi-scope/layout.tsx`, um
+  layout novo que envolve **todas** as rotas do Escopometro (Etapas 1-4 ja existentes) —
+  nao so a Etapa 4 —, satisfazendo "visivel nesta e nas demais etapas" sem duplicar a
+  chamada em cada pagina. Se o modulo ainda nao foi ativado ou a sessao expirou, o layout
+  so renderiza os filhos (a propria pagina trata o estado de erro/redirect).
+- `ScopeDefinition` (declaracao formal, fundamentacao executiva) com autosave via
+  textarea simples; descricao detalhada reusa o `RichTextEditor` (TipTap, Task 014).
+  `ScopeListBlock` e um componente generico reutilizado para caracteristicas e
+  beneficios (mesma forma, so muda o endpoint).
+- `StepNav` ganhou `href` real para a Etapa 4 — as 4 etapas do Slice 002/003 agora sao
+  todas navegaveis livremente entre si (PRD secao 7).
+
+## Arquivos alterados
+
+- Criados: `next-js/src/services/sgsi-scope/scope-definition.service.ts`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/scope-definition/route.ts` (+
+  `characteristics[/:id]`, `benefits[/:id]`),
+  `next-js/src/app/projects/[id]/sgsi-scope/scope-definition/page.tsx`,
+  `next-js/src/app/projects/[id]/sgsi-scope/layout.tsx` (+css),
+  `next-js/src/modules/sgsi-scope/FillPercentageIndicator.tsx` (+css),
+  `next-js/src/modules/sgsi-scope/etapa-escopo/{EtapaEscopoForm,ScopeListBlock}.tsx` (+css).
+- Modificado: `next-js/src/modules/sgsi-scope/StepNav.tsx` (href da Etapa 4).
+
+## Validacoes executadas
+
+- `npm run lint`: executado sem erros
+- `npm run typecheck`: executado sem erros
+- `npm run build`: executado com sucesso (33 rotas)
+- Revisao de copy: texto do disclaimer conferido linha a linha contra a lista de "nao
+  representa" do PRD secao 16 (conformidade ISO 27001, maturidade, qualidade, prontidao,
+  adequacao — todos citados explicitamente no disclaimer)
+- Teste manual (via `next dev` + browser): confirmado que
+  `/projects/:id/sgsi-scope/scope-definition` redireciona para `/login` sem sessao.
+  **Indicador visual e fluxo completo (autosave, listas) nao testados contra backend
+  real** (sem Postgres/backend disponivel neste ambiente, mesma limitacao das demais
+  tasks de UI).
+
+## Pendencias pos-task
+
+- Testar o indicador e o fluxo completo contra o backend real apos deploy.
+- Este e o ultimo entregavel do Slice 003 (015-018) — slice fecha com esta task.
+
 ## Status final
 
-planned
+done
