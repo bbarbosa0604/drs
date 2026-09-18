@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -173,4 +173,43 @@ ui-front
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- Uma rota (`/projects/:id/sgsi-scope/limits`) com 6 blocos empilhados (mesmo padrao de
+  secoes/cards ja usado nas Etapas 4/6, **nao abas** — abas seriam um padrao de UI novo
+  sem justificativa, contra o "Nao deve" da task): Localidades, Colaboradores/areas,
+  Ativos, Prestadores (listas com create/edit/delete in-place, reusando o padrao
+  `*Row.tsx` das Tasks 021/022), Aprovacao (autosave, mesmo hook `useAutosave` da Etapa 4) e Revisoes (log append-only: so formulario de criacao + lista somente leitura,
+  espelhando `ScopeRevisionEntity` nao ter update/delete).
+- `services/sgsi-scope/limits.service.ts` criado seguindo o mesmo formato de
+  `scope-engine.service.ts` (Task 021).
+
+## Arquivos alterados
+
+- Criados: `next-js/src/services/sgsi-scope/limits.service.ts`,
+  `next-js/src/modules/sgsi-scope/etapa-limites-recursos/**`
+  (`EtapaLimitesRecursosForm.tsx` + `.module.css`, `EntityRow.module.css`,
+  `{ScopeLocationRow,ScopeEmployeeGroupRow,ScopeAssetRow,ScopeProviderRow}.tsx`),
+  `next-js/src/app/projects/[id]/sgsi-scope/limits/page.tsx`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/limits/{locations[/:id],employee-groups[/:id],assets[/:id],providers[/:id],approval,revisions}/route.ts`.
+- Modificado: `next-js/src/modules/sgsi-scope/StepNav.tsx` (href da Etapa 7).
+
+## Validacoes executadas
+
+- `npm run lint`, `npm run typecheck`, `npm run test` (vitest 9/9), `npm run build` (52
+  rotas): OK.
+- Manual: redirect para `/login` sem sessao confirmado no browser (backend real em
+  `:3000`, sem Postgres). Fluxo completo nao testado por falta de banco.
+
+## Pendencias ou bloqueios
+
+- Testar fluxo completo (CRUD das 4 listas + autosave de aprovacao + criacao de
+  revisao) contra backend com Postgres real.
+- Slice 005 (Tasks 023-024) esta 100% `done`.
+
+## Proximo contexto recomendado
+
+Task 025 (Slice 006) - UI Etapa 8 (Previa & Exportacao): visao consolidada do
+Escopometro.

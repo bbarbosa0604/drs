@@ -143,7 +143,8 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - Task 021: `done`
 - Task 022: `done`
 - Task 023: `done`
-- Demais tasks (024-027): `planned`
+- Task 024: `done`
+- Demais tasks (025-027): `planned`
 
 ## Dependencias cruzadas
 
@@ -182,6 +183,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-021.md` - Task 021 concluida (`done`); UI da Etapa 5 (Cadeia de Valor) com formulario + lista editavel + `ValueChainDiagram` (Task 019) sincronizado; `ScopeClassification` dos diagramas ganhou `unclassified`; `scope-engine.service.ts`/`scope-engine-options.ts` criados ja cobrindo Topologia/Arquitetura; proximo contexto recomendado para a Task 022.
 - `.agents/state/handoffs/TASK-022.md` - Task 022 concluida (`done`); UI da Etapa 6 (Topologia & Arquitetura) numa unica rota com 2 subsecoes e seus diagramas (`TopologyDiagram`/`ArchitectureDiagram`); **Slice 004 (019-022) esta 100% `done`**; proximo contexto recomendado para o inicio do Slice 005 (Task 023).
 - `.agents/state/handoffs/TASK-023.md` - Task 023 concluida (`done`); primeira task do Slice 005; submodulo `backend/src/modules/sgsi-scope/limits/` com as 6 entidades da Etapa 7 (Locations/EmployeeGroups/Assets/Providers como listas, Approval como registro 1:1, Revisions como log so-criacao); `fill-percentage.util.ts` nao foi estendido para Etapas 5-7 (lacuna registrada); proximo contexto recomendado para a Task 024.
+- `.agents/state/handoffs/TASK-024.md` - Task 024 concluida (`done`); UI da Etapa 7 (Limites & Recursos) com 6 blocos empilhados (nao abas, para nao introduzir padrao de UI novo); **Slice 005 (023-024) esta 100% `done`**; proximo contexto recomendado para o inicio do Slice 006 (Task 025).
 
 ## Duvidas para validacao humana
 

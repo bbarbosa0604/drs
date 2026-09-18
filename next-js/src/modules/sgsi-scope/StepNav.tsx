@@ -31,6 +31,7 @@ export function StepNav({
     4: `/projects/${projectId}/sgsi-scope/scope-definition`,
     5: `/projects/${projectId}/sgsi-scope/value-chain`,
     6: `/projects/${projectId}/sgsi-scope/topology`,
+    7: `/projects/${projectId}/sgsi-scope/limits`,
   };
 
   return (
