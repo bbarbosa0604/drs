@@ -5,6 +5,52 @@ import { useState, type FormEvent } from 'react';
 
 import styles from './login.module.css';
 
+function MailIcon() {
+  return (
+    <svg
+      className={styles.inputIcon}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M4 7 L12 13 L20 7" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg
+      className={styles.inputIcon}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M5 12 H19 M13 6 L19 12 L13 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -46,29 +92,37 @@ export function LoginForm() {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <label className={styles.field}>
-        <span className={styles.label}>Email</span>
-        <input
-          className={styles.input}
-          type="email"
-          name="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
+        <span className={styles.label}>E-mail</span>
+        <span className={styles.inputWrapper}>
+          <MailIcon />
+          <input
+            className={styles.input}
+            type="email"
+            name="email"
+            placeholder="nome@empresa.com.br"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </span>
       </label>
       <label className={styles.field}>
         <span className={styles.label}>Senha</span>
-        <input
-          className={styles.input}
-          type="password"
-          name="password"
-          autoComplete="current-password"
-          required
-          minLength={8}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
+        <span className={styles.inputWrapper}>
+          <LockIcon />
+          <input
+            className={styles.input}
+            type="password"
+            name="password"
+            placeholder="Digite sua senha"
+            autoComplete="current-password"
+            required
+            minLength={8}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </span>
       </label>
       {error ? (
         <p className={styles.error} role="alert">
@@ -76,7 +130,8 @@ export function LoginForm() {
         </p>
       ) : null}
       <button className={styles.submit} type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Entrando...' : 'Entrar'}
+        {isSubmitting ? 'Entrando...' : 'Entrar na plataforma'}
+        <ArrowIcon />
       </button>
     </form>
   );
