@@ -1081,6 +1081,471 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/sgsi-scope/value-chain:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getValueChainSection
+      summary: Obtem os blocos da cadeia de valor (Etapa 5, PRD secao 12)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Secao Cadeia de Valor encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueChainSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/value-chain/blocks:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createValueChainBlock
+      summary: >
+        Cria um bloco da cadeia de valor. Classificacao de escopo omitida
+        fica "nao classificada" - nunca inferida automaticamente (PRD secao
+        12/44).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueChainBlockInput"
+      responses:
+        "201":
+          description: Bloco criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueChainBlock"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/value-chain/blocks/{blockId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: blockId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateValueChainBlock
+      summary: Atualiza um bloco da cadeia de valor
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueChainBlockInput"
+      responses:
+        "200":
+          description: Bloco atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValueChainBlock"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteValueChainBlock
+      summary: Remove um bloco da cadeia de valor
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Bloco removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/topology:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getTopologySection
+      summary: Obtem nos e conexoes da topologia (Etapa 6.1, PRD secao 13.1)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Secao Topologia encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopologySection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/topology/nodes:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createTopologyNode
+      summary: >
+        Cria um no de topologia. Classificacao de escopo omitida fica "nao
+        classificada" - nunca inferida automaticamente (PRD secao 12/44).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopologyNodeInput"
+      responses:
+        "201":
+          description: No criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopologyNode"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/topology/nodes/{nodeId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateTopologyNode
+      summary: Atualiza um no de topologia
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopologyNodeInput"
+      responses:
+        "200":
+          description: No atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopologyNode"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteTopologyNode
+      summary: >
+        Remove um no de topologia. Bloqueado (409) se ainda houver link
+        referenciando o no - PRD recomenda bloquear em vez de cascatear
+        (Task 020).
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: No removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /projects/{id}/sgsi-scope/topology/links:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createTopologyLink
+      summary: >
+        Cria uma conexao entre dois nos de topologia. `fromNodeId`/`toNodeId`
+        inexistentes retornam 400 (validacao referencial, Task 020).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopologyLinkInput"
+      responses:
+        "201":
+          description: Conexao criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopologyLink"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/topology/links/{linkId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: linkId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateTopologyLink
+      summary: Atualiza uma conexao de topologia
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopologyLinkInput"
+      responses:
+        "200":
+          description: Conexao atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopologyLink"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteTopologyLink
+      summary: Remove uma conexao de topologia
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Conexao removida
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/architecture:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getArchitectureSection
+      summary: Obtem componentes e interfaces da arquitetura (Etapa 6.2, PRD secao 13.2)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Secao Arquitetura encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchitectureSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/architecture/components:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createArchitectureComponent
+      summary: >
+        Cria um componente de arquitetura. Classificacao de escopo omitida
+        fica "nao classificada" - nunca inferida automaticamente (PRD secao
+        12/44).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchitectureComponentInput"
+      responses:
+        "201":
+          description: Componente criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchitectureComponent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/architecture/components/{componentId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: componentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateArchitectureComponent
+      summary: Atualiza um componente de arquitetura
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchitectureComponentInput"
+      responses:
+        "200":
+          description: Componente atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchitectureComponent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteArchitectureComponent
+      summary: >
+        Remove um componente de arquitetura. Bloqueado (409) se ainda houver
+        interface referenciando o componente - PRD recomenda bloquear em vez
+        de cascatear (Task 020).
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Componente removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /projects/{id}/sgsi-scope/architecture/interfaces:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createArchitectureInterface
+      summary: >
+        Cria uma interface entre dois componentes de arquitetura.
+        `fromComponentId`/`toComponentId` inexistentes retornam 400
+        (validacao referencial, Task 020).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchitectureInterfaceInput"
+      responses:
+        "201":
+          description: Interface criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchitectureInterface"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/architecture/interfaces/{interfaceId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: interfaceId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateArchitectureInterface
+      summary: Atualiza uma interface de arquitetura
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchitectureInterfaceInput"
+      responses:
+        "200":
+          description: Interface atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArchitectureInterface"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteArchitectureInterface
+      summary: Remove uma interface de arquitetura
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Interface removida
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /projects/{id}/sgsi-scope/fill-percentage:
     parameters:
       - $ref: "#/components/parameters/ProjectId"
@@ -1150,6 +1615,15 @@ components:
             $ref: "#/components/schemas/Error"
     NotFound:
       description: Recurso nao encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflict:
+      description: >
+        Remocao bloqueada por integridade referencial (ex.: no de topologia ou
+        componente de arquitetura ainda referenciado por um link/interface -
+        Task 020, recomendacao do PRD e bloquear em vez de cascatear).
       content:
         application/json:
           schema:
@@ -1881,6 +2355,255 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ScopeListItem"
+
+    ScopeClassification:
+      type: string
+      description: >
+        PRD secao 12. Nunca inferida automaticamente - omitida/`null` =
+        "nao classificada" (Task 020).
+      nullable: true
+      enum: [IN_SCOPE, OUT_SCOPE, INTERFACE]
+
+    ValueChainCategory:
+      type: string
+      description: PRD secao 12.
+      enum: [INPUT, PRIMARY_PROCESS, SUPPORT_PROCESS, OUTPUT]
+
+    ValueChainBlockInput:
+      type: object
+      description: Etapa 5 - Cadeia de Valor (PRD secao 12).
+      required: [name, category]
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        description:
+          type: string
+          nullable: true
+        responsibleArea:
+          type: string
+          nullable: true
+        category:
+          $ref: "#/components/schemas/ValueChainCategory"
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    ValueChainBlock:
+      allOf:
+        - $ref: "#/components/schemas/ValueChainBlockInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ValueChainSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/value-chain`.
+      required: [blocks]
+      properties:
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValueChainBlock"
+
+    TopologyNodeType:
+      type: string
+      description: PRD secao 13.1.
+      enum:
+        - APPLICATION
+        - DATABASE
+        - NETWORK
+        - FIREWALL
+        - CLOUD
+        - SERVER
+        - USER
+        - INTERNET
+        - THIRD_PARTY
+        - PHYSICAL_UNIT
+        - OTHER
+
+    TopologyNodeInput:
+      type: object
+      description: Etapa 6.1 - Topologia, cadastro de nos (PRD secao 13.1).
+      required: [name, type]
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        type:
+          $ref: "#/components/schemas/TopologyNodeType"
+        description:
+          type: string
+          nullable: true
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    TopologyNode:
+      allOf:
+        - $ref: "#/components/schemas/TopologyNodeInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    TopologyLinkInput:
+      type: object
+      description: Etapa 6.1 - Topologia, cadastro de conexoes (PRD secao 13.1).
+      required: [fromNodeId, toNodeId]
+      properties:
+        fromNodeId:
+          type: string
+          format: uuid
+        toNodeId:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+        linkType:
+          type: string
+          nullable: true
+          maxLength: 120
+
+    TopologyLink:
+      allOf:
+        - $ref: "#/components/schemas/TopologyLinkInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    TopologySection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/topology`.
+      required: [nodes, links]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopologyNode"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopologyLink"
+
+    ArchitectureComponentInput:
+      type: object
+      description: Etapa 6.2 - Arquitetura, cadastro de componentes (PRD secao 13.2).
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        layer:
+          type: string
+          nullable: true
+          maxLength: 160
+        description:
+          type: string
+          nullable: true
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    ArchitectureComponent:
+      allOf:
+        - $ref: "#/components/schemas/ArchitectureComponentInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ArchitectureInterfaceInput:
+      type: object
+      description: Etapa 6.2 - Arquitetura, cadastro de interfaces (PRD secao 13.2).
+      required: [fromComponentId, toComponentId]
+      properties:
+        fromComponentId:
+          type: string
+          format: uuid
+        toComponentId:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+
+    ArchitectureInterface:
+      allOf:
+        - $ref: "#/components/schemas/ArchitectureInterfaceInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ArchitectureSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/architecture`.
+      required: [components, interfaces]
+      properties:
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArchitectureComponent"
+        interfaces:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArchitectureInterface"
 
     FillPercentage:
       type: object

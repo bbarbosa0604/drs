@@ -379,15 +379,99 @@ prontidao/adequacao, so presenca de campos. Lista fechada de 22 checks cobrindo 
 1-4 (as unicas modeladas ate este slice); Etapa 1 "Dados da organizacao" fica de fora por
 ser referencia reaproveitada da Organizacao, nao dado preenchido no fluxo do Escopometro.
 
+## Entidades implementadas (Slice 004 — Scope Engine: Cadeia de Valor, Topologia & Arquitetura)
+
+Persistencia das 5 entidades que alimentam a camada de diagramas da Task 019
+(`next-js/src/modules/sgsi-scope/diagrams`). `classification` (PRD secao 12) e sempre
+nullable e **nunca** inferida automaticamente — ausente significa "nao classificada", em
+nenhum caso um default `IN_SCOPE` silencioso.
+
+### ValueChainBlock
+
+`backend/src/modules/sgsi-scope/scope-engine/entities/value-chain-block.entity.ts`
+(Task 020). Etapa 5 (PRD secao 12).
+
+| Coluna                  | Tipo         | Notas                                                        |
+| ----------------------- | ------------ | ------------------------------------------------------------ |
+| id                      | uuid PK      |                                                              |
+| sgsi_scope_id           | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE`                     |
+| name                    | varchar(160) |                                                              |
+| description             | text         | nullable                                                     |
+| responsible_area        | varchar(160) | nullable                                                     |
+| category                | varchar(30)  | enum `INPUT \| PRIMARY_PROCESS \| SUPPORT_PROCESS \| OUTPUT` |
+| classification          | varchar(20)  | nullable — enum `IN_SCOPE \| OUT_SCOPE \| INTERFACE`         |
+| created_at / updated_at | timestamptz  |                                                              |
+
+### TopologyNode / TopologyLink
+
+`backend/src/modules/sgsi-scope/scope-engine/entities/topology-{node,link}.entity.ts`
+(Task 020). Etapa 6.1 (PRD secao 13.1). `TopologyLink.from_node_id`/`to_node_id` sao FK
+para `topology_nodes` com `ON DELETE RESTRICT` (defesa em profundidade); o bloqueio com
+mensagem clara (409) acontece antes, no `TopologyService.removeNode` — decisao humana do
+PRD (bloquear em vez de cascatear) registrada na Task 020.
+
+| Coluna (TopologyNode)   | Tipo         | Notas                                                                                                                                 |
+| ----------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | uuid PK      |                                                                                                                                       |
+| sgsi_scope_id           | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE`                                                                                              |
+| name                    | varchar(160) |                                                                                                                                       |
+| type                    | varchar(30)  | enum `APPLICATION \| DATABASE \| NETWORK \| FIREWALL \| CLOUD \| SERVER \| USER \| INTERNET \| THIRD_PARTY \| PHYSICAL_UNIT \| OTHER` |
+| description             | text         | nullable                                                                                                                              |
+| classification          | varchar(20)  | nullable                                                                                                                              |
+| created_at / updated_at | timestamptz  |                                                                                                                                       |
+
+| Coluna (TopologyLink)     | Tipo         | Notas                                              |
+| ------------------------- | ------------ | -------------------------------------------------- |
+| id                        | uuid PK      |                                                    |
+| sgsi_scope_id             | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE`           |
+| from_node_id / to_node_id | uuid FK      | -> `topology_nodes.id`, `ON DELETE RESTRICT`       |
+| description               | text         | nullable                                           |
+| link_type                 | varchar(120) | nullable — livre, PRD nao lista enum para conexoes |
+| created_at / updated_at   | timestamptz  |                                                    |
+
+### ArchitectureComponent / ArchitectureInterface
+
+`backend/src/modules/sgsi-scope/scope-engine/entities/architecture-{component,interface}.entity.ts`
+(Task 020). Etapa 6.2 (PRD secao 13.2). Mesma politica de `ArchitectureInterface` (FK
+`ON DELETE RESTRICT` + bloqueio 409 explicito em `ArchitectureService.removeComponent`).
+
+| Coluna (ArchitectureComponent) | Tipo         | Notas                                           |
+| ------------------------------ | ------------ | ----------------------------------------------- |
+| id                             | uuid PK      |                                                 |
+| sgsi_scope_id                  | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE`        |
+| name                           | varchar(160) |                                                 |
+| layer                          | varchar(160) | nullable — "camada", livre (PRD nao lista enum) |
+| description                    | text         | nullable                                        |
+| classification                 | varchar(20)  | nullable                                        |
+| created_at / updated_at        | timestamptz  |                                                 |
+
+| Coluna (ArchitectureInterface)      | Tipo        | Notas                                                 |
+| ----------------------------------- | ----------- | ----------------------------------------------------- |
+| id                                  | uuid PK     |                                                       |
+| sgsi_scope_id                       | uuid FK     | -> `sgsi_scopes.id`, `ON DELETE CASCADE`              |
+| from_component_id / to_component_id | uuid FK     | -> `architecture_components.id`, `ON DELETE RESTRICT` |
+| description                         | text        | nullable                                              |
+| created_at / updated_at             | timestamptz |                                                       |
+
+Enums (`ScopeClassification`, `ValueChainCategory`, `TopologyNodeType`) vivem em
+`backend/src/common/enums/`, seguindo a convencao ja usada por `ContextAspectType`
+(Task 012) — deviacao intencional do path de escrita restrito da Security Constraints da
+Task 020 (`scope-engine/**`), documentada no handoff da task para manter o codebase
+consistente em vez de duplicar o enum dentro do submodulo.
+
+Migration: `1700000006000-CreateScopeEngineTables.ts` — criada, **ainda nao executada**
+contra um Postgres real (mesma situacao das migrations anteriores neste ambiente de
+desenvolvimento).
+
 ## Pendente para as proximas tasks
 
 `SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext`,
 `ContextAspect`, `Stakeholder`, `Requirement`, `ProjectRequirement`,
-`GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`, `ScopeCharacteristic` e
-`ScopeBenefit` ja existem (Tasks 011/012/015/016, acima). `OrganizationValue` foi
-deliberadamente **nao** criada (ver nota em `OrganizationContext`). Restam do PRD secao
-22: `ValueChainBlock`, `TopologyNode`, `TopologyLink`, `ArchitectureComponent`,
-`ArchitectureInterface`, `ScopeLocation`, `ScopeEmployeeGroup`, `ScopeAsset`,
-`ScopeProvider`, `ScopeApproval`, `ScopeRevision`, `GeneratedDocument` — serao
-adicionadas incrementalmente a este documento pelas tasks correspondentes (Slices
-004-006), nao de uma vez.
+`GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`, `ScopeCharacteristic`,
+`ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
+`ArchitectureComponent` e `ArchitectureInterface` ja existem (Tasks
+011/012/015/016/020, acima). `OrganizationValue` foi deliberadamente **nao** criada (ver
+nota em `OrganizationContext`). Restam do PRD secao 22: `ScopeLocation`,
+`ScopeEmployeeGroup`, `ScopeAsset`, `ScopeProvider`, `ScopeApproval`, `ScopeRevision`,
+`GeneratedDocument` — serao adicionadas incrementalmente a este documento pelas tasks
+correspondentes (Slices 005-006), nao de uma vez.

@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -161,4 +161,77 @@ api-back
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- Submodulo `backend/src/modules/sgsi-scope/scope-engine/` com 5 entidades TypeORM
+  (`ValueChainBlockEntity`, `TopologyNodeEntity`, `TopologyLinkEntity`,
+  `ArchitectureComponentEntity`, `ArchitectureInterfaceEntity`), 3 services + 3
+  controllers (`ValueChain`, `Topology`, `Architecture`) e `ScopeEngineModule`
+  registrado em `app.module.ts`.
+- Enums (`ScopeClassification`, `ValueChainCategory`, `TopologyNodeType`) exatamente
+  conforme PRD secoes 12-13, criados em `backend/src/common/enums/` (mesma convencao de
+  `ContextAspectType` da Task 012) — **desvio documentado** do path de escrita restrito
+  da Security Constraints (`scope-engine/**`); ver "Pendencias ou bloqueios".
+- `classification` sempre `nullable`, nunca default `IN_SCOPE` (dto/entity/service —
+  omitido ou `null` fica "nao classificado").
+- Validacao referencial: `TopologyLink`/`ArchitectureInterface` validam
+  `fromNodeId`/`toNodeId`/`fromComponentId`/`toComponentId` contra o `sgsiScopeId` do
+  projeto antes de salvar -> `BadRequestException` (400) se o no/componente nao existir
+  ou for de outro escopo (FK do banco com `ON DELETE RESTRICT` como defesa em
+  profundidade).
+- Decisao humana registrada (recomendacao do PRD adotada): excluir um `TopologyNode`/
+  `ArchitectureComponent` ainda referenciado por um link/interface e **bloqueado**
+  (`ConflictException`, 409), nunca cascateado.
+- Contrato `contracts/openapi.yaml` atualizado: 15 paths novos (`value-chain`,
+  `value-chain/blocks[/:id]`, `topology`, `topology/nodes[/:id]`, `topology/links[/:id]`,
+  `architecture`, `architecture/components[/:id]`, `architecture/interfaces[/:id]`) + 17
+  schemas novos + resposta `Conflict` (409) nova em `components/responses`.
+- `docs/architecture.md` e `docs/database.md` atualizados com o que foi implementado
+  (a secao "Diagramas" do architecture.md, que citava a Task 020 como pendente, e a nova
+  secao "Slice 004" do database.md).
+
+## Arquivos alterados
+
+- Criados: `backend/src/common/enums/{scope-classification,value-chain-category,topology-node-type}.enum.ts`,
+  `backend/src/modules/sgsi-scope/scope-engine/{scope-engine.module.ts,value-chain.controller.ts,value-chain.service.ts,value-chain.service.spec.ts,topology.controller.ts,topology.service.ts,topology.service.spec.ts,architecture.controller.ts,architecture.service.ts,architecture.service.spec.ts}`,
+  `.../scope-engine/entities/{value-chain-block,topology-node,topology-link,architecture-component,architecture-interface}.entity.ts`,
+  `.../scope-engine/dto/{value-chain-block,topology-node,topology-link,architecture-component,architecture-interface}.dto.ts`,
+  `backend/src/database/migrations/1700000006000-CreateScopeEngineTables.ts`.
+- Modificado: `backend/src/app.module.ts` (registro do `ScopeEngineModule`),
+  `contracts/openapi.yaml`, `docs/architecture.md`, `docs/database.md`.
+
+## Validacoes executadas
+
+- `npm run test` (backend, jest): 19 suites / 75 testes, todos passando (11 novos nos 3
+  spec files do scope-engine).
+- `npm run lint` OK (apos `--fix` de formatacao), `npm run build` (`nest build`) OK.
+- `contracts/openapi.yaml` validado com `js-yaml` (parse sem erro, 41 paths / 61
+  schemas).
+
+## Pendencias ou bloqueios
+
+- **Migration criada, nao executada** — sem Postgres real neste ambiente (mesma situacao
+  de todas as migrations anteriores do projeto). Rodar `npm run migration:run` contra um
+  banco real exige aprovacao humana explicita (marcado na Security Constraints da task) —
+  nao fiz isso.
+- **Desvio de path documentado**: os 3 enums novos foram colocados em
+  `backend/src/common/enums/` (fora do path de escrita nominal
+  `scope-engine/**`/`database/migrations/**` da Security Constraints), replicando a
+  convencao ja usada por `ContextAspectType` (Task 012) em vez de duplicar o enum dentro
+  do submodulo — mesma logica do wiring em `app.module.ts` (tambem fora do path nominal,
+  mas necessario para o modulo funcionar). Decisao de consistencia de codebase, nao
+  scope creep; se o Bruno preferir os enums dentro de `scope-engine/enums/`, e um ajuste
+  pequeno e isolado.
+- Politica de exclusao (bloquear em vez de cascatear) segue a recomendacao do PRD, mas
+  nao foi explicitamente confirmada pelo Bruno — mesmo padrao de "premissa adotada,
+  registrada" das Tasks 005/006 (politica de exclusao de Organizacao/status de Projeto).
+- Sem verificacao contra API real (sem Postgres rodando); cobertura e so unitaria
+  (services com repository mockado).
+
+## Proximo contexto recomendado
+
+Tasks 021/022 (Slice 004) - UI das Etapas 5 (Cadeia de Valor) e 6 (Topologia &
+Arquitetura), consumindo os endpoints desta task e os componentes
+`ValueChainDiagram`/`TopologyDiagram`/`ArchitectureDiagram` da Task 019.

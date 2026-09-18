@@ -9,6 +9,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { ContextModule } from './modules/sgsi-scope/context/context.module';
 import { RequirementsModule } from './modules/sgsi-scope/requirements/requirements.module';
 import { ScopeDefinitionModule } from './modules/sgsi-scope/scope-definition/scope-definition.module';
+import { ScopeEngineModule } from './modules/sgsi-scope/scope-engine/scope-engine.module';
 import { SgsiScopeModule } from './modules/sgsi-scope/sgsi-scope.module';
 import { UsersModule } from './modules/users/users.module';
 import { appConfig } from './config/app.config';
@@ -34,6 +35,7 @@ import { createTypeOrmOptions, databaseConfig } from './config/database.config';
     ContextModule,
     RequirementsModule,
     ScopeDefinitionModule,
+    ScopeEngineModule,
   ],
 })
 export class AppModule {}

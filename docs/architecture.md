@@ -83,7 +83,7 @@ Ver detalhe em `CLAUDE.md#multitenancy-e-autorizacao`. Resumo tecnico:
   bloqueando exclusao com projetos ativos; `ProjectsService.update` decidindo quando
   gravar `AuditLog`).
 
-## Diagramas (decisao #8 — camada implementada na Task 019, entidades pendentes na Task 020)
+## Diagramas (decisao #8 — camada implementada na Task 019, entidades e endpoints na Task 020)
 
 `next-js/src/modules/sgsi-scope/diagrams/` implementa a camada tecnica pura exigida pelo
 PRD (secoes 12, 13, 37, 44): os diagramas sao **derivados de dados estruturados**, nunca
@@ -107,10 +107,16 @@ depende diretamente de SVG.
   escopo, contorno laranja = interface) escopadas em `render/DiagramSvg.module.css`,
   derivadas dos tokens Daryus (`--color-brand-navy`, `--color-brand-primary`).
 
-Pendente (Task 020): as entidades reais (`ValueChainBlock`, `TopologyNode`, `TopologyLink`,
+As 5 entidades reais (`ValueChainBlock`, `TopologyNode`, `TopologyLink`,
 `ArchitectureComponent`, `ArchitectureInterface` — ver `docs/database.md`) e os endpoints
-que alimentam `DiagramData` a partir do backend. As UIs das Etapas 5/6 (Tasks 021/022)
-consomem esta camada, nao implementam layout/render proprios.
+que as persistem foram implementados na Task 020, no submodulo
+`backend/src/modules/sgsi-scope/scope-engine/`. `classification` e sempre nullable e
+nunca inferida automaticamente; exclusao de no/componente ainda referenciado por
+link/interface e **bloqueada** (409), nunca cascateada (decisao humana registrada na
+Task 020, seguindo a recomendacao do PRD). Pendente: as UIs das Etapas 5/6 (Tasks
+021/022), que devem consumir `ValueChainDiagram`/`TopologyDiagram`/`ArchitectureDiagram`
+(Task 019) alimentados pelos endpoints desta task — nao implementar layout/render
+proprios nem re-derivar `DiagramData` na UI.
 
 ## Documentos gerados (decisao #9 — planejado, Task 026)
 
