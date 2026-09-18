@@ -1,17 +1,16 @@
 .shell {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  height: 64px;
-  padding: 0 24px;
-  background: var(--color-brand-navy);
+  grid-template-columns: 260px minmax(0, 1fr);
 }
 
 .content {
   padding: 24px;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
 }

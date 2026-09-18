@@ -1,0 +1,90 @@
+.sidebar {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  min-height: 100vh;
+  padding: 24px 16px;
+  background: var(--color-brand-navy);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand {
+  padding: 0 8px;
+}
+
+.nav {
+  display: grid;
+  gap: 4px;
+}
+
+.link,
+.groupToggle,
+.childLink {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.link:hover,
+.groupToggle:hover,
+.childLink:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-on-brand);
+}
+
+.linkActive {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-brand);
+}
+
+.group {
+  display: grid;
+  gap: 2px;
+}
+
+.groupToggle {
+  width: 100%;
+  border: none;
+  background: transparent;
+  justify-content: space-between;
+  cursor: pointer;
+  font: inherit;
+}
+
+.chevron {
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 160ms ease;
+}
+
+.chevronOpen {
+  color: var(--color-text-on-brand);
+  transform: rotate(180deg);
+}
+
+.groupChildren {
+  display: grid;
+  gap: 2px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.childLink {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}

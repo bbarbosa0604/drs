@@ -28,6 +28,7 @@ DRS e uma plataforma modular para apoiar execucao, registro, gestao e geracao de
 - `tasks/slices/004-escopometro-scope-engine.md` - Escopometro: Etapa 5 Cadeia de Valor, Etapa 6 Topologia & Arquitetura, diagramas
 - `tasks/slices/005-escopometro-limites-aprovacao.md` - Escopometro: Etapa 7 Limites & Recursos, aprovacao, revisoes
 - `tasks/slices/006-escopometro-previa-documentos.md` - Escopometro: Etapa 8 Previa & Exportacao, geracao DOCX/PPTX, auditoria, versionamento
+- `tasks/slices/007-shell-navegacao.md` - Shell: menu lateral de navegacao (Sidebar), extensivel para novos modulos
 
 ## Classificacao do design-system por stack
 
@@ -189,6 +190,7 @@ Ordem recomendada: Slice 001 (fundacao) -> Slice 002 (Empresa/Contexto) -> Slice
 - `.agents/state/handoffs/TASK-025.md` - Task 025 concluida (`done`); primeira task do Slice 006; UI da Etapa 8 (Previa & Exportacao) sem endpoint de preview agregado no backend (gap registrado, resolvido com fetch paralelo dos endpoints existentes); botoes de geracao de documento chamam endpoints que a Task 026 ainda vai criar; aprovacao humana ja obtida para as decisoes da Task 026 (docx+pptxgenjs, storage filesystem local); proximo contexto recomendado para a Task 026.
 - `.agents/state/handoffs/TASK-026.md` - Task 026 concluida (`done`); `DocumentGenerationService` completo (3 documentos MVP + download autenticado), `docx`+`pptxgenjs` instalados com aprovacao humana previa, storage = filesystem local atras de interface S3-compativel; validado manualmente fora do Jest (assinatura ZIP + conteudo dos 3 arquivos gerados); ajustou o contrato provisorio da Task 025 (`downloadUrl` removido, proxy de download novo no next-js); proximo contexto recomendado para a Task 027 (ultima do backlog atual).
 - `.agents/state/handoffs/TASK-027.md` - Task 027 concluida (`done`); **fecha o backlog atual (Tasks 001-027 100% `done`)**; `AuditLogService.record()` centralizado + `SgsiScopeVersioningService` (bloqueio real de sobrescrita de versao aprovada, testado); nenhuma migration nova (tabelas ja existiam desde Tasks 002/011); gaps reais registrados: nenhum servico de escrita do Escopometro chama a protecao de versionamento ainda, `docs/architecture.md` "Versionamento" corrigido (estava desatualizado desde a Task 011); sem proxima task planejada — exige nova rodada de planejamento.
+- `.agents/state/handoffs/TASK-028.md` - Task 028 concluida (`done`); primeira e unica task do Slice 007 (Shell e navegacao); `Sidebar` colapsavel/extensivel criado e integrado ao `AppShell` (Dashboard/Organizacoes/Projetos), marca movida do header antigo para o topo do menu; sem verificacao visual autenticada real (ambiente sem backend/DB local, `.env.local` aponta para producao) — pendencia registrada para o Bruno validar com `npm run dev` numa sessao real; sem proxima task planejada.
 
 ## Duvidas para validacao humana
 
