@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -173,4 +173,47 @@ ui-front
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- Uma rota (`/projects/:id/sgsi-scope/topology`) com 2 subsecoes (Topologia,
+  Arquitetura), cada uma com seu diagrama (`TopologyDiagram`/`ArchitectureDiagram`,
+  Task 019) + listas com create/edit/delete in-place, reaproveitando o padrao
+  `*Row.tsx` da Task 021.
+- Nos de topologia agrupados no diagrama por `type` (11 tipos do PRD secao 13.1);
+  componentes de arquitetura agrupados por `layer` (com fallback "Sem camada" quando
+  vazio) — ambos via `computeGroupedColumnLayout` (Task 019).
+- Formulario de conexao/interface so aparece quando ha pelo menos 1 no/componente
+  cadastrado (dropdown depende de opcoes existirem); mensagem explicita quando vazio.
+- Exclusao de no/componente ainda referenciado (409 do backend, Task 020) e propagada
+  como erro visivel na linha, sem remover otimisticamente do estado local (diferente do
+  padrao de bloco/link/interface, que remove otimista e so falha silenciosamente no
+  raro caso de erro de rede).
+
+## Arquivos alterados
+
+- Criados: `next-js/src/modules/sgsi-scope/etapa-topologia-arquitetura/**`
+  (`EtapaTopologiaArquiteturaForm.tsx` + `.module.css`, `EntityRow.module.css`,
+  `{TopologyNodeRow,TopologyLinkRow,ArchitectureComponentRow,ArchitectureInterfaceRow}.tsx`),
+  `next-js/src/app/projects/[id]/sgsi-scope/topology/page.tsx`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/{topology/nodes[/:id],topology/links[/:id],architecture/components[/:id],architecture/interfaces[/:id]}/route.ts`.
+
+## Validacoes executadas
+
+- `npm run lint`, `npm run typecheck`, `npm run test` (vitest 9/9), `npm run build` (41
+  rotas): OK.
+- Manual: redirect para `/login` sem sessao confirmado no browser para
+  `/projects/:id/sgsi-scope/topology` (backend real em `:3000`, sem Postgres). Fluxo
+  completo nao testado por falta de banco.
+
+## Pendencias ou bloqueios
+
+- Testar fluxo completo (CRUD de nos/links/componentes/interfaces + os 2 diagramas)
+  contra backend com Postgres real.
+- Slice 004 (Tasks 019-022) esta 100% `done`.
+
+## Proximo contexto recomendado
+
+Task 023 (Slice 005) - entidades ScopeLocation/ScopeEmployeeGroup/ScopeAsset/
+ScopeProvider/ScopeApproval/ScopeRevision (Etapa 7 + fluxo de aprovacao/revisao).
