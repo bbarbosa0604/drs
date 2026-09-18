@@ -5,6 +5,22 @@
   margin: 0 auto;
 }
 
+.stepNavWrapper {
+  display: grid;
+  gap: 8px;
+}
+
+.backLink {
+  justify-self: start;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.backLink:hover {
+  color: var(--color-accent);
+}
+
 .steps {
   display: flex;
   flex-wrap: wrap;

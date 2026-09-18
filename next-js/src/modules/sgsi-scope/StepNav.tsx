@@ -36,24 +36,29 @@ export function StepNav({
   };
 
   return (
-    <nav className={styles.steps} aria-label="Etapas do Escopometro">
-      {STEPS.map((step, index) => {
-        const stepNumber = index + 1;
-        const href = hrefByStep[stepNumber];
-        const className =
-          stepNumber === activeStep ? styles.stepActive : styles.step;
-        const label = `${stepNumber}. ${step}`;
+    <div className={styles.stepNavWrapper}>
+      <Link className={styles.backLink} href={`/projects/${projectId}`}>
+        ← Voltar ao projeto
+      </Link>
+      <nav className={styles.steps} aria-label="Etapas do Escopometro">
+        {STEPS.map((step, index) => {
+          const stepNumber = index + 1;
+          const href = hrefByStep[stepNumber];
+          const className =
+            stepNumber === activeStep ? styles.stepActive : styles.step;
+          const label = `${stepNumber}. ${step}`;
 
-        return href ? (
-          <Link key={step} className={className} href={href}>
-            {label}
-          </Link>
-        ) : (
-          <span key={step} className={className}>
-            {label}
-          </span>
-        );
-      })}
-    </nav>
+          return href ? (
+            <Link key={step} className={className} href={href}>
+              {label}
+            </Link>
+          ) : (
+            <span key={step} className={className}>
+              {label}
+            </span>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
