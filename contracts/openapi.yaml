@@ -1546,6 +1546,390 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/sgsi-scope/limits:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getLimitsSection
+      summary: >
+        Obtem localidades, colaboradores/areas, ativos, prestadores, aprovacao
+        e revisoes (Etapa 7, PRD secao 14)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Secao Limites & Recursos encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LimitsSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/locations:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeLocation
+      summary: Cria uma localidade (Etapa 7.1, PRD secao 14.1)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeLocationInput"
+      responses:
+        "201":
+          description: Localidade criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeLocation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/locations/{locationId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: locationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateScopeLocation
+      summary: Atualiza uma localidade
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeLocationInput"
+      responses:
+        "200":
+          description: Localidade atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeLocation"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteScopeLocation
+      summary: Remove uma localidade
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Localidade removida
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/employee-groups:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeEmployeeGroup
+      summary: Cria um grupo de colaboradores/area (Etapa 7.2, PRD secao 14.2)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeEmployeeGroupInput"
+      responses:
+        "201":
+          description: Grupo criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeEmployeeGroup"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/employee-groups/{groupId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: groupId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateScopeEmployeeGroup
+      summary: Atualiza um grupo de colaboradores/area
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeEmployeeGroupInput"
+      responses:
+        "200":
+          description: Grupo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeEmployeeGroup"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteScopeEmployeeGroup
+      summary: Remove um grupo de colaboradores/area
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Grupo removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/assets:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeAsset
+      summary: Cria um ativo tecnologico (Etapa 7.3, PRD secao 14.3)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeAssetInput"
+      responses:
+        "201":
+          description: Ativo criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeAsset"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/assets/{assetId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: assetId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateScopeAsset
+      summary: Atualiza um ativo tecnologico
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeAssetInput"
+      responses:
+        "200":
+          description: Ativo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeAsset"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteScopeAsset
+      summary: Remove um ativo tecnologico
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Ativo removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/providers:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeProvider
+      summary: Cria um prestador de servico (Etapa 7.4, PRD secao 14.4)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeProviderInput"
+      responses:
+        "201":
+          description: Prestador criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeProvider"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/providers/{providerId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: providerId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateScopeProvider
+      summary: Atualiza um prestador de servico
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeProviderInput"
+      responses:
+        "200":
+          description: Prestador atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeProvider"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteScopeProvider
+      summary: Remove um prestador de servico
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Prestador removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/approval:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    patch:
+      operationId: updateScopeApproval
+      summary: >
+        Autosave do registro de aprovacao (Etapa 7.5, PRD secao 14.5).
+        Responsavel/data ausentes sao permitidos no MVP (reduzem o percentual
+        de preenchimento, nunca bloqueiam o salvamento).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeApprovalInput"
+      responses:
+        "200":
+          description: Aprovacao atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeApproval"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/limits/revisions:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeRevision
+      summary: >
+        Adiciona uma entrada ao historico de revisoes (Etapa 7.6, PRD secao
+        14.6). Log de historico - sem update/delete.
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeRevisionInput"
+      responses:
+        "201":
+          description: Revisao criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeRevision"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /projects/{id}/sgsi-scope/fill-percentage:
     parameters:
       - $ref: "#/components/parameters/ProjectId"
@@ -2604,6 +2988,266 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ArchitectureInterface"
+
+    ScopeLocationInput:
+      type: object
+      description: Etapa 7.1 - Localidades (PRD secao 14.1).
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 160
+        address:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    ScopeLocation:
+      allOf:
+        - $ref: "#/components/schemas/ScopeLocationInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ScopeEmployeeGroupInput:
+      type: object
+      description: Etapa 7.2 - Colaboradores/areas (PRD secao 14.2).
+      required: [areaOrGroup]
+      properties:
+        areaOrGroup:
+          type: string
+          maxLength: 160
+        quantity:
+          type: integer
+          minimum: 0
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    ScopeEmployeeGroup:
+      allOf:
+        - $ref: "#/components/schemas/ScopeEmployeeGroupInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ScopeAssetInput:
+      type: object
+      description: Etapa 7.3 - Ativos tecnologicos (PRD secao 14.3).
+      required: [assetName]
+      properties:
+        assetName:
+          type: string
+          maxLength: 160
+        category:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        responsible:
+          type: string
+          nullable: true
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    ScopeAsset:
+      allOf:
+        - $ref: "#/components/schemas/ScopeAssetInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ScopeProviderInput:
+      type: object
+      description: Etapa 7.4 - Prestadores de servico (PRD secao 14.4).
+      required: [providerName]
+      properties:
+        providerName:
+          type: string
+          maxLength: 160
+        service:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        classification:
+          $ref: "#/components/schemas/ScopeClassification"
+
+    ScopeProvider:
+      allOf:
+        - $ref: "#/components/schemas/ScopeProviderInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ScopeApprovalInput:
+      type: object
+      description: >
+        Etapa 7.5 - Aprovacao (PRD secao 14.5). Registro unico por
+        SgsiScope, todos os campos opcionais (incompleto e permitido no MVP -
+        Task 023).
+      properties:
+        method:
+          type: string
+          nullable: true
+        platform:
+          type: string
+          nullable: true
+        approvalText:
+          type: string
+          nullable: true
+        responsible:
+          type: string
+          nullable: true
+        approvedAt:
+          type: string
+          format: date
+          nullable: true
+        observations:
+          type: string
+          nullable: true
+
+    ScopeApproval:
+      allOf:
+        - $ref: "#/components/schemas/ScopeApprovalInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt, updatedAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    ScopeRevisionInput:
+      type: object
+      description: >
+        Etapa 7.6 - Revisoes (PRD secao 14.6). Entrada de historico -
+        so criacao, sem update/delete.
+      required: [version, revisedAt, responsible, changeDescription]
+      properties:
+        version:
+          type: string
+          maxLength: 40
+        revisedAt:
+          type: string
+          format: date
+        responsible:
+          type: string
+          maxLength: 160
+        changeDescription:
+          type: string
+
+    ScopeRevision:
+      allOf:
+        - $ref: "#/components/schemas/ScopeRevisionInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+
+    LimitsSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/limits`.
+      required:
+        [locations, employeeGroups, assets, providers, approval, revisions]
+      properties:
+        locations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeLocation"
+        employeeGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeEmployeeGroup"
+        assets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeAsset"
+        providers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeProvider"
+        approval:
+          allOf:
+            - $ref: "#/components/schemas/ScopeApproval"
+          nullable: true
+        revisions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeRevision"
 
     FillPercentage:
       type: object

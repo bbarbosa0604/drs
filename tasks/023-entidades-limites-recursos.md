@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -158,4 +158,49 @@ api-back
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- Submodulo `backend/src/modules/sgsi-scope/limits/` com as 6 entidades, um
+  service/controller so (`LimitsService`/`LimitsController`, mesmo espirito do
+  `ScopeDefinitionService`) e `LimitsModule` registrado em `app.module.ts`.
+- 4 entidades de lista (Location/EmployeeGroup/Asset/Provider) com CRUD completo,
+  reusando `ScopeClassification` (nao um enum novo, per "Nao deve" da task).
+- `ScopeApproval`: registro unico por `SgsiScope` (upsert via `PATCH`), todos os campos
+  opcionais — responsavel/data ausentes nao bloqueiam o salvamento (PRD - Task 023).
+- `ScopeRevision`: log de historico, so `POST`/listagem (sem update/delete) — decisao
+  de modelagem porque o PRD descreve a secao 14.6 como "Historico", nao uma lista
+  editavel.
+- Contrato `openapi.yaml`: 11 paths novos + 15 schemas novos.
+
+## Arquivos alterados
+
+- Criados: `backend/src/modules/sgsi-scope/limits/**` (module, controller, service +
+  spec, 6 entities, 6 dto files),
+  `backend/src/database/migrations/1700000007000-CreateLimitsTables.ts`.
+- Modificado: `backend/src/app.module.ts`, `contracts/openapi.yaml`, `docs/database.md`.
+
+## Validacoes executadas
+
+- `npm run test` (backend): 20 suites / 80 testes passando (5 novos).
+- `npm run lint` (com `--fix` de formatacao), `npm run build` (`nest build`): OK.
+- `contracts/openapi.yaml`: parse OK via `js-yaml` (52 paths, 74 schemas).
+
+## Pendencias ou bloqueios
+
+- Migration criada, **nao executada** contra Postgres real (aprovacao humana
+  necessaria antes de rodar `npm run migration:run`).
+- `fill-percentage.util.ts` (Task 016) **nao foi estendido** para cobrir Etapas 5-7
+  (Cadeia de Valor, Topologia & Arquitetura, Limites & Recursos) — o PRD (casos de erro
+  desta task) implica que a aprovacao incompleta deveria "reduzir o percentual de
+  preenchimento", mas isso exigiria revisitar a lista fechada de 22 checks (Task 016) de
+  forma deliberada, fora do criterio de conclusao explicito desta task ("CRUD completo
+  das 6 entidades"). Registrado como lacuna real, nao decisao silenciosa — nenhuma task
+  do Slice 004 tambem fez essa extensao.
+- Sem teste de integracao contra API/banco reais.
+
+## Proximo contexto recomendado
+
+Task 024 (Slice 005) - UI Etapa 7 (Limites & Recursos), consumindo
+`/projects/:id/sgsi-scope/limits`.

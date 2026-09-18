@@ -463,15 +463,83 @@ Migration: `1700000006000-CreateScopeEngineTables.ts` — criada, **ainda nao ex
 contra um Postgres real (mesma situacao das migrations anteriores neste ambiente de
 desenvolvimento).
 
+## Entidades implementadas (Slice 005 — Limites, Recursos & Aprovacao)
+
+Persistencia das 6 subsecoes da Etapa 7 (PRD secao 14). Mesma politica de
+`classification` das entidades do Slice 004 (nullable, nunca inferida automaticamente).
+
+### ScopeLocation / ScopeEmployeeGroup / ScopeAsset / ScopeProvider
+
+`backend/src/modules/sgsi-scope/limits/entities/scope-{location,employee-group,asset,provider}.entity.ts`
+(Task 023). Listas simples, mesmo padrao das entidades de lista ja existentes
+(`ScopeCharacteristic`, `ValueChainBlock`).
+
+| Coluna comum            | Tipo        | Notas                                    |
+| ----------------------- | ----------- | ---------------------------------------- |
+| id                      | uuid PK     |                                          |
+| sgsi_scope_id           | uuid FK     | -> `sgsi_scopes.id`, `ON DELETE CASCADE` |
+| classification          | varchar(20) | nullable                                 |
+| created_at / updated_at | timestamptz |                                          |
+
+Campos especificos: `ScopeLocation` (`name`, `address` nullable, `description`
+nullable); `ScopeEmployeeGroup` (`area_or_group`, `quantity` int nullable,
+`description` nullable); `ScopeAsset` (`asset_name`, `category` nullable,
+`description` nullable, `responsible` nullable); `ScopeProvider` (`provider_name`,
+`service` nullable, `description` nullable — sem campo `responsible`, PRD secao 14.4
+nao lista esse campo para prestadores).
+
+### ScopeApproval
+
+`backend/src/modules/sgsi-scope/limits/entities/scope-approval.entity.ts` (Task 023).
+Registro **unico** por `SgsiScope` (unique index em `sgsi_scope_id`, mesmo padrao 1:1
+de `ScopeDefinition`), criado sob demanda no primeiro autosave. Todos os campos
+nullable — responsavel/data ausentes sao permitidos no MVP (PRD - Task 023: nao
+bloqueia, so reduz o percentual de preenchimento; a extensao do calculo de
+preenchimento para cobrir esses campos **nao foi feita nesta task**, ver pendencia).
+
+| Coluna                  | Tipo         | Notas        |
+| ----------------------- | ------------ | ------------ |
+| id                      | uuid PK      |              |
+| sgsi_scope_id           | uuid FK      | unique (1:1) |
+| method                  | varchar(120) | nullable     |
+| platform                | varchar(120) | nullable     |
+| approval_text           | text         | nullable     |
+| responsible             | varchar(160) | nullable     |
+| approved_at             | date         | nullable     |
+| observations            | text         | nullable     |
+| created_at / updated_at | timestamptz  |              |
+
+### ScopeRevision
+
+`backend/src/modules/sgsi-scope/limits/entities/scope-revision.entity.ts` (Task 023).
+"Historico" (PRD secao 14.6) — entrada de log, **so criacao/listagem** (sem
+update/delete), mesmo espirito de `AuditLog`. Nao tem `updated_at` (imutavel apos
+criada).
+
+| Coluna             | Tipo         | Notas                                    |
+| ------------------ | ------------ | ---------------------------------------- |
+| id                 | uuid PK      |                                          |
+| sgsi_scope_id      | uuid FK      | -> `sgsi_scopes.id`, `ON DELETE CASCADE` |
+| version            | varchar(40)  |                                          |
+| revised_at         | date         |                                          |
+| responsible        | varchar(160) |                                          |
+| change_description | text         |                                          |
+| created_at         | timestamptz  |                                          |
+
+Migration: `1700000007000-CreateLimitsTables.ts` — criada, **ainda nao executada**
+contra um Postgres real (mesma situacao das migrations anteriores).
+
 ## Pendente para as proximas tasks
 
 `SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext`,
 `ContextAspect`, `Stakeholder`, `Requirement`, `ProjectRequirement`,
 `GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`, `ScopeCharacteristic`,
 `ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
-`ArchitectureComponent` e `ArchitectureInterface` ja existem (Tasks
-011/012/015/016/020, acima). `OrganizationValue` foi deliberadamente **nao** criada (ver
-nota em `OrganizationContext`). Restam do PRD secao 22: `ScopeLocation`,
-`ScopeEmployeeGroup`, `ScopeAsset`, `ScopeProvider`, `ScopeApproval`, `ScopeRevision`,
-`GeneratedDocument` — serao adicionadas incrementalmente a este documento pelas tasks
-correspondentes (Slices 005-006), nao de uma vez.
+`ArchitectureComponent`, `ArchitectureInterface`, `ScopeLocation`,
+`ScopeEmployeeGroup`, `ScopeAsset`, `ScopeProvider`, `ScopeApproval` e `ScopeRevision`
+ja existem (Tasks 011/012/015/016/020/023, acima). `OrganizationValue` foi
+deliberadamente **nao** criada (ver nota em `OrganizationContext`). Resta do PRD secao
+22: `GeneratedDocument` (Task 026). O calculo de percentual de preenchimento
+(`fill-percentage.util.ts`, Task 016) ainda cobre so as Etapas 1-4 — estender para as
+Etapas 5-7 (Slices 004-005) nao foi pedido nem feito em nenhuma task ate aqui; fica
+registrado como lacuna, nao decisao silenciosa.

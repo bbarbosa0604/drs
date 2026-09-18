@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { ContextModule } from './modules/sgsi-scope/context/context.module';
+import { LimitsModule } from './modules/sgsi-scope/limits/limits.module';
 import { RequirementsModule } from './modules/sgsi-scope/requirements/requirements.module';
 import { ScopeDefinitionModule } from './modules/sgsi-scope/scope-definition/scope-definition.module';
 import { ScopeEngineModule } from './modules/sgsi-scope/scope-engine/scope-engine.module';
@@ -36,6 +37,7 @@ import { createTypeOrmOptions, databaseConfig } from './config/database.config';
     RequirementsModule,
     ScopeDefinitionModule,
     ScopeEngineModule,
+    LimitsModule,
   ],
 })
 export class AppModule {}
