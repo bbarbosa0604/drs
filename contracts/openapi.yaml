@@ -884,6 +884,228 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /projects/{id}/sgsi-scope/scope-definition:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getScopeDefinitionSection
+      summary: Obtem a declaracao de escopo, caracteristicas e beneficios (Etapa 4)
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Secao Escopo encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeDefinitionSection"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateScopeDefinition
+      summary: >
+        Autosave da declaracao formal, fundamentacao executiva e descricao
+        detalhada (conteudo rico, sanitizado no servidor). O sistema nunca
+        decide o escopo automaticamente (PRD secao 11).
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeDefinitionInput"
+      responses:
+        "200":
+          description: Declaracao de escopo atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeDefinition"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/scope-definition/characteristics:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeCharacteristic
+      summary: Adiciona uma caracteristica do escopo (Etapa 4.4)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeListItemInput"
+      responses:
+        "201":
+          description: Caracteristica criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeListItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/scope-definition/characteristics/{characteristicId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: characteristicId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateScopeCharacteristic
+      summary: Atualiza uma caracteristica do escopo
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeListItemInput"
+      responses:
+        "200":
+          description: Caracteristica atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeListItem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteScopeCharacteristic
+      summary: Remove uma caracteristica do escopo
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Caracteristica removida
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/scope-definition/benefits:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    post:
+      operationId: createScopeBenefit
+      summary: Adiciona um beneficio/resultado esperado do escopo (Etapa 4.5)
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeListItemInput"
+      responses:
+        "201":
+          description: Beneficio criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeListItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/scope-definition/benefits/{benefitId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - name: benefitId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateScopeBenefit
+      summary: Atualiza um beneficio/resultado esperado do escopo
+      tags: [sgsi-scope]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeListItemInput"
+      responses:
+        "200":
+          description: Beneficio atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeListItem"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      operationId: deleteScopeBenefit
+      summary: Remove um beneficio/resultado esperado do escopo
+      tags: [sgsi-scope]
+      responses:
+        "204":
+          description: Beneficio removido
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /projects/{id}/sgsi-scope/fill-percentage:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getFillPercentage
+      summary: >
+        Percentual de preenchimento do Escopometro (PRD secao 16). NUNCA
+        representa conformidade, maturidade, qualidade, prontidao ou
+        adequacao do escopo — so mede presenca de campos esperados nas
+        etapas ja modeladas (1-4 nesta versao do contrato).
+      tags: [sgsi-scope]
+      responses:
+        "200":
+          description: Percentual calculado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FillPercentage"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1567,6 +1789,117 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/GovernanceMember"
+
+    ScopeDefinitionInput:
+      type: object
+      description: >
+        Etapa 4.1-4.3 (PRD secao 11). `detailedDescriptionHtml` e HTML de um
+        editor de conteudo rico, sanitizado no servidor antes de persistir
+        (mesmo padrao de `OrganizationContext.history`, Task 012).
+      properties:
+        formalDeclaration:
+          type: string
+          nullable: true
+          description: "11.1 - Declaracao formal do escopo."
+        executiveJustification:
+          type: string
+          nullable: true
+          description: "11.2 - Fundamentacao executiva."
+        detailedDescriptionHtml:
+          type: string
+          nullable: true
+          description: "11.3 - Descricao detalhada (editor de conteudo rico)."
+
+    ScopeDefinition:
+      type: object
+      required: [id, sgsiScopeId, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        sgsiScopeId:
+          type: string
+          format: uuid
+        formalDeclaration:
+          type: string
+          nullable: true
+        executiveJustification:
+          type: string
+          nullable: true
+        detailedDescription:
+          type: object
+          nullable: true
+          description: Envelope `{ html }` com o HTML ja sanitizado.
+          properties:
+            html:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ScopeListItemInput:
+      type: object
+      description: Usado por caracteristicas (4.4) e beneficios (4.5) do escopo.
+      required: [description]
+      properties:
+        description:
+          type: string
+
+    ScopeListItem:
+      allOf:
+        - $ref: "#/components/schemas/ScopeListItemInput"
+        - type: object
+          required: [id, sgsiScopeId, createdAt]
+          properties:
+            id:
+              type: string
+              format: uuid
+            sgsiScopeId:
+              type: string
+              format: uuid
+            createdAt:
+              type: string
+              format: date-time
+
+    ScopeDefinitionSection:
+      type: object
+      description: Resposta de `GET .../sgsi-scope/scope-definition`.
+      required: [scopeDefinition, characteristics, benefits]
+      properties:
+        scopeDefinition:
+          allOf:
+            - $ref: "#/components/schemas/ScopeDefinition"
+          nullable: true
+        characteristics:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeListItem"
+        benefits:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScopeListItem"
+
+    FillPercentage:
+      type: object
+      description: >
+        PRD secao 16. `label` e sempre o texto fixo abaixo — nunca
+        conformidade/maturidade/qualidade/prontidao/adequacao.
+      required: [label, percentage, totalChecks, passedChecks]
+      properties:
+        label:
+          type: string
+          enum: ["Percentual de preenchimento do Escopometro"]
+        percentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+        totalChecks:
+          type: integer
+        passedChecks:
+          type: integer
 
     AuditAction:
       type: string

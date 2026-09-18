@@ -242,6 +242,9 @@ SgsiScope 1---N ContextAspect
 SgsiScope 1---N Stakeholder
 SgsiScope 1---N ProjectRequirement N---0..1 Requirement (biblioteca global)
 SgsiScope 1---1 GovernanceCommittee 1---N GovernanceMember
+SgsiScope 1---1 ScopeDefinition
+SgsiScope 1---N ScopeCharacteristic
+SgsiScope 1---N ScopeBenefit
 ```
 
 ## Versionamento (planejado, Slice 002+)
@@ -336,15 +339,55 @@ funcao definida -> 400"), validado via DTO.
 | committee_role          | varchar(120) | "papel no comite" (ex.: Presidente), nullable      |
 | created_at / updated_at | timestamptz  |                                                    |
 
+## Entidades implementadas (Slice 003, continuacao — Etapa 4)
+
+### ScopeDefinition
+
+`backend/src/modules/sgsi-scope/scope-definition/entities/scope-definition.entity.ts`
+(Task 016). Etapa 4.1-4.3 (PRD secao 11) — criado sob demanda no primeiro autosave.
+`detailed_description` segue o mesmo formato `{ html }` sanitizado de
+`OrganizationContext.history` (Task 012).
+
+| Coluna                  | Tipo        | Notas                                                  |
+| ----------------------- | ----------- | ------------------------------------------------------ |
+| id                      | uuid PK     |                                                        |
+| sgsi_scope_id           | uuid FK     | -> `sgsi_scopes.id`, `ON DELETE CASCADE`, unique (1:1) |
+| formal_declaration      | text        | nullable — "declaracao formal do escopo"               |
+| executive_justification | text        | nullable — "fundamentacao executiva"                   |
+| detailed_description    | jsonb       | nullable — `{ html }` sanitizado                       |
+| created_at / updated_at | timestamptz |                                                        |
+
+### ScopeCharacteristic / ScopeBenefit
+
+`backend/src/modules/sgsi-scope/scope-definition/entities/scope-{characteristic,benefit}.entity.ts`
+(Task 016). Etapas 4.4/4.5 — listas dinamicas, mesma forma simples (so `description`).
+
+| Coluna        | Tipo        | Notas                                    |
+| ------------- | ----------- | ---------------------------------------- |
+| id            | uuid PK     |                                          |
+| sgsi_scope_id | uuid FK     | -> `sgsi_scopes.id`, `ON DELETE CASCADE` |
+| description   | text        | obrigatorio                              |
+| created_at    | timestamptz |                                          |
+
+### Percentual de preenchimento (sem entidade propria)
+
+`GET /projects/:id/sgsi-scope/fill-percentage` (Task 016) e uma agregacao calculada em
+tempo real por `FillPercentageService`, sem tabela propria. `calculateFillPercentage`
+(`fill-percentage.util.ts`) e uma funcao pura testada isoladamente (0%, parcial, 100%) —
+ver PRD secao 16: o resultado **nunca** representa conformidade/maturidade/qualidade/
+prontidao/adequacao, so presenca de campos. Lista fechada de 22 checks cobrindo Etapas
+1-4 (as unicas modeladas ate este slice); Etapa 1 "Dados da organizacao" fica de fora por
+ser referencia reaproveitada da Organizacao, nao dado preenchido no fluxo do Escopometro.
+
 ## Pendente para as proximas tasks
 
 `SgsiScope`, `SgsiScopeVersion`, `DocumentControl`, `OrganizationContext`,
 `ContextAspect`, `Stakeholder`, `Requirement`, `ProjectRequirement`,
-`GovernanceCommittee` e `GovernanceMember` ja existem (Tasks 011/012/015, acima).
-`OrganizationValue` foi deliberadamente **nao** criada (ver nota em
-`OrganizationContext`). Restam do PRD secao 22: `ScopeDefinition`, `ScopeCharacteristic`,
-`ScopeBenefit`, `ValueChainBlock`, `TopologyNode`, `TopologyLink`,
-`ArchitectureComponent`, `ArchitectureInterface`, `ScopeLocation`, `ScopeEmployeeGroup`,
-`ScopeAsset`, `ScopeProvider`, `ScopeApproval`, `ScopeRevision`, `GeneratedDocument` —
-serao adicionadas incrementalmente a este documento pelas tasks correspondentes (Slices
-003-006), nao de uma vez.
+`GovernanceCommittee`, `GovernanceMember`, `ScopeDefinition`, `ScopeCharacteristic` e
+`ScopeBenefit` ja existem (Tasks 011/012/015/016, acima). `OrganizationValue` foi
+deliberadamente **nao** criada (ver nota em `OrganizationContext`). Restam do PRD secao
+22: `ValueChainBlock`, `TopologyNode`, `TopologyLink`, `ArchitectureComponent`,
+`ArchitectureInterface`, `ScopeLocation`, `ScopeEmployeeGroup`, `ScopeAsset`,
+`ScopeProvider`, `ScopeApproval`, `ScopeRevision`, `GeneratedDocument` — serao
+adicionadas incrementalmente a este documento pelas tasks correspondentes (Slices
+004-006), nao de uma vez.
