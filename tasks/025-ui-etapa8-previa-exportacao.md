@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+done
 
 ## Tipo
 
@@ -173,4 +173,61 @@ ui-front
 
 ## Status final
 
-planned
+done
+
+## Resultado da execucao
+
+- **Gap real registrado**: nao existe (nem existe task planejada para) um endpoint
+  agregado `/sgsi-scope/preview` no backend. A pagina busca em paralelo (`Promise.all`)
+  os endpoints ja existentes (projeto, organizacao, sgsi-scope, fill-percentage,
+  scope-definition, value-chain, topology, architecture, limits) e so compoe a
+  exibicao — mesmo padrao ja aceito na Task 022 (Topologia+Arquitetura na mesma
+  pagina). Nenhuma regra de negocio nova foi recalculada no front (contagens/
+  agrupamento por classificacao sao so apresentacao, `classified-items.ts`).
+  Segue documentado em `docs/architecture.md` como decisao explicita.
+- Previa com aparencia de "relatorio" (borda, sombra sutil, cabecalho com regua navy) —
+  atende a regra visual da task, distinta do estilo de formulario das etapas
+  anteriores.
+- Diagramas embutidos reaproveitando `ValueChainDiagram`/`TopologyDiagram`/
+  `ArchitectureDiagram` (Task 019) sem nenhuma logica de layout nova.
+- 3 botoes de geracao de documento (`DocumentGenerationButtons`), cada um chamando um
+  endpoint `/projects/:id/sgsi-scope/documents/{scope-declaration,approval-proposal,approval-presentation}`
+  **que ainda nao existe** (Task 026 vai cria-lo). Testado manualmente: o botao mostra
+  "Gerando..." e depois a mensagem de erro clara (404 do backend), nunca um spinner
+  infinito — exatamente o caso de erro que a task pede, e hoje verificavel de verdade
+  porque o endpoint genuinamente nao existe ainda.
+- `services/sgsi-scope/documents.service.ts` com tipos/paths **provisorios**: a Task
+  026 deve manter compatibilidade ou atualizar este arquivo (so este) se o contrato
+  real definido por ela for diferente.
+
+## Arquivos alterados
+
+- Criados: `next-js/src/services/sgsi-scope/documents.service.ts`,
+  `next-js/src/modules/sgsi-scope/etapa-previa/**`
+  (`EtapaPreviaExportacao.tsx` + `.module.css`, `classified-items.ts`,
+  `DocumentGenerationButtons.tsx` + `.module.css`),
+  `next-js/src/app/projects/[id]/sgsi-scope/preview/page.tsx`,
+  `next-js/src/app/api/projects/[id]/sgsi-scope/documents/{scope-declaration,approval-proposal,approval-presentation}/route.ts`.
+- Modificado: `next-js/src/modules/sgsi-scope/StepNav.tsx` (href da Etapa 8).
+
+## Validacoes executadas
+
+- `npm run lint`, `npm run typecheck`, `npm run test` (vitest 9/9), `npm run build` (55
+  rotas): OK.
+- Manual: redirect para `/login` sem sessao confirmado no browser. Fluxo completo
+  (previa com dados reais, geracao de documento) nao testado por falta de Postgres.
+
+## Pendencias ou bloqueios
+
+- Sem endpoint de preview agregado no backend (ver "Resultado da execucao") — se um
+  dia for criado, esta pagina deve passar a consumi-lo em vez de fazer 8 fetches em
+  paralelo.
+- Botoes de geracao chamam endpoints que so existirao apos a Task 026.
+- Testar fluxo completo contra backend com Postgres real.
+
+## Proximo contexto recomendado
+
+Task 026 (Slice 006) - `DocumentGenerationService`. Bibliotecas aprovadas pelo Bruno:
+`docx` + `pptxgenjs`. Storage aprovado: adapter de filesystem local por tras de uma
+interface compativel com S3 (sem credenciais reais, trocar por S3/MinIO depois e so
+configuracao).

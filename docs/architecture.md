@@ -118,12 +118,33 @@ Task 020, seguindo a recomendacao do PRD). Pendente: as UIs das Etapas 5/6 (Task
 (Task 019) alimentados pelos endpoints desta task — nao implementar layout/render
 proprios nem re-derivar `DiagramData` na UI.
 
+## Previa consolidada (Etapa 8, Task 025)
+
+`next-js/src/app/projects/[id]/sgsi-scope/preview/page.tsx` implementa a Etapa 8 (PRD
+secao 15) **sem** um endpoint de preview agregado no backend — nenhuma task do backlog
+atual cria esse endpoint (`tasks/000-index.md` nao lista uma task para
+`/sgsi-scope/preview`). A pagina busca em paralelo (`Promise.all`) os endpoints que ja
+existem (`project`, `organization`, `sgsi-scope`, `fill-percentage`,
+`scope-definition`, `value-chain`, `topology`, `architecture`, `limits`) e so compoe a
+exibicao (`modules/sgsi-scope/etapa-previa/classified-items.ts` agrupa por
+classificacao so para renderizar, sem recalcular nenhuma regra de dominio) — mesmo
+padrao ja usado pela Task 022 (Topologia+Arquitetura numa pagina so). Se um endpoint de
+preview agregado for criado no futuro, esta pagina deve passar a consumi-lo em vez de
+fazer varios fetches.
+
 ## Documentos gerados (decisao #9 — planejado, Task 026)
 
 Ainda nao implementado. Geracao de documento (`GeneratedDocument`) deve ser um servico
 independente do CRUD do Escopometro — nao acoplado ao formulario nem gerado
-sincronamente na mesma transacao que salva o rascunho. Formato e biblioteca serao
-decididos na Task 026.
+sincronamente na mesma transacao que salva o rascunho. Bibliotecas aprovadas pelo Bruno
+(Task 025): `docx` (DOCX) e `pptxgenjs` (PPTX). Storage aprovado: adapter de
+filesystem local por tras de uma interface compativel com S3 (sem provedor real nem
+credenciais de producao neste ambiente); trocar por S3/MinIO real depois e so
+configuracao, sem mudar o dominio.
+`next-js/src/services/sgsi-scope/documents.service.ts` (Task 025) ja declara o
+contrato **provisorio** que a UI espera (`POST .../documents/{scope-declaration,
+approval-proposal,approval-presentation}`) — a Task 026 deve manter compatibilidade ou
+atualizar esse arquivo junto se o contrato real for diferente.
 
 ## Storage (planejado)
 

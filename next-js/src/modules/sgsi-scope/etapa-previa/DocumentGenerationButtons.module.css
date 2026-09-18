@@ -1,0 +1,47 @@
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.button {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-text-on-brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--color-accent-hover);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.error {
+  font-size: 0.875rem;
+  color: var(--color-brand-primary-dark);
+}
+
+.link {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}

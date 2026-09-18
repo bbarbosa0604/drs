@@ -1,0 +1,127 @@
+.page {
+  display: grid;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Aparencia de documento/relatorio profissional (PRD - Task 025, regra de aderencia visual). */
+.report {
+  display: grid;
+  gap: 28px;
+  padding: 40px;
+  border-radius: 4px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(7, 10, 13, 0.08);
+}
+
+.reportHeader {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--color-brand-navy);
+}
+
+.reportTitle {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.reportMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.section {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.0625rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.statCard {
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.statValue {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-brand-navy);
+}
+
+.statLabel {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.classificationGroups {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.classificationGroup {
+  display: grid;
+  gap: 6px;
+}
+
+.classificationGroupTitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.itemList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.875rem;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.itemOrigin {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+.diagramWrapper {
+  overflow-x: auto;
+}
+
+.diagramTitle {
+  margin: 0 0 8px;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+}
